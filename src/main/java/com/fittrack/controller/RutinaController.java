@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/ejercicios")
-public class EjercicioController {
+@RequestMapping("/rutinas")
+public class RutinaController {
 
 }
