@@ -30,7 +30,60 @@ public class Rutina {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @Enumerated(EnumType.STRING) 
+    @Enumerated(EnumType.STRING)
     @Column(name = "dia_semana", nullable = false)
     private DiaSemana diaSemana;
+
+    // Constructor
+    public Rutina() {
+    }
+
+    public Rutina(Usuario usuario, String nombre, String descripcion, DiaSemana diaSemana) {
+        this.usuario = usuario;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.diaSemana = diaSemana;
+    }
+
+    // Getters and Setters
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return this.descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public DiaSemana getDiaSemana() {
+        return this.diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
+    }
 }

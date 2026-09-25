@@ -36,7 +36,77 @@ public class Entrenamiento {
     @Column(name = "notas")
     private String notas;
 
-    @Column (name = "url_foto", nullable = false)
+    @Column(name = "url_foto", nullable = false)
     private String urlFoto;
 
+    // Constructor
+    public Entrenamiento() {
+    }
+
+    public Entrenamiento(Usuario usuario, Rutina rutina, LocalDate fecha, Integer duracionMinutos, String notas,
+            String urlFoto) {
+        this.usuario = usuario;
+        this.rutina = rutina;
+        this.fecha = fecha;
+        this.duracionMinutos = duracionMinutos;
+        this.notas = notas;
+        this.urlFoto = urlFoto;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Rutina getRutina() {
+        return this.rutina;
+    }
+
+    public void setRutina(Rutina rutina) {
+        this.rutina = rutina;
+    }
+
+    public LocalDate getFecha() {
+        return this.fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public Integer getDuracionMinutos() {
+        return this.duracionMinutos;
+    }
+
+    public void setDuracionMinutos(Integer duracionMinutos) {
+        this.duracionMinutos = duracionMinutos;
+    }
+
+    public String getNotas() {
+        return this.notas;
+    }
+
+    public void setNotas(String notas) {
+        this.notas = notas;
+    }
+
+    public String getUrlFoto() {
+        return this.urlFoto;
+    }
+
+    public void setUrlFoto(String urlFoto) {
+        this.urlFoto = urlFoto;
+    }
 }

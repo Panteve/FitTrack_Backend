@@ -29,6 +29,18 @@ public class Usuario {
     @Column(name = "fecha_registro", nullable = false)
     private LocalDate fechaRegistro;
 
+    // Constructor
+    public Usuario() {
+    }
+
+    public Usuario(String nombre, String correo, String contrasena, LocalDate fechaRegistro) {
+        this.nombre = nombre;
+        this.correo = correo;
+        this.contrasena = contrasena;
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    // Getters and Setters
     public Long getId() {
         return this.id;
     }

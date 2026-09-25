@@ -38,4 +38,74 @@ public class RutinaEjercicio {
     @Column(name = "orden")
     private Integer orden;
 
+    // Constructor
+    public RutinaEjercicio() {
+    }
+
+    public RutinaEjercicio(Rutina rutina, Ejercicio ejercicio, Integer seriesObjetivo, Integer repeticionesObjetivo,
+            BigDecimal pesoObjetivo, Integer orden) {
+        this.rutina = rutina;
+        this.ejercicio = ejercicio;
+        this.seriesObjetivo = seriesObjetivo;
+        this.repeticionesObjetivo = repeticionesObjetivo;
+        this.pesoObjetivo = pesoObjetivo;
+        this.orden = orden;
+    }
+    
+    // Getters and Setters
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Rutina getRutina() {
+        return this.rutina;
+    }
+
+    public void setRutina(Rutina rutina) {
+        this.rutina = rutina;
+    }
+
+    public Ejercicio getEjercicio() {
+        return this.ejercicio;
+    }
+
+    public void setEjercicio(Ejercicio ejercicio) {
+        this.ejercicio = ejercicio;
+    }
+
+    public Integer getSeriesObjetivo() {
+        return this.seriesObjetivo;
+    }
+
+    public void setSeriesObjetivo(Integer seriesObjetivo) {
+        this.seriesObjetivo = seriesObjetivo;
+    }
+
+    public Integer getRepeticionesObjetivo() {
+        return this.repeticionesObjetivo;
+    }
+
+    public void setRepeticionesObjetivo(Integer repeticionesObjetivo) {
+        this.repeticionesObjetivo = repeticionesObjetivo;
+    }
+
+    public BigDecimal getPesoObjetivo() {
+        return this.pesoObjetivo;
+    }
+
+    public void setPesoObjetivo(BigDecimal pesoObjetivo) {
+        this.pesoObjetivo = pesoObjetivo;
+    }
+
+    public Integer getOrden() {
+        return this.orden;
+    }
+
+    public void setOrden(Integer orden) {
+        this.orden = orden;
+    }
 }
