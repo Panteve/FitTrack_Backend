@@ -1,7 +1,11 @@
 package com.fittrack.entity;
 
+import com.fittrack.enums.DiaSemana;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,8 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ejercicio")
-public class Ejercicio {
+@Table(name = "rutina")
+public class Rutina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +27,10 @@ public class Ejercicio {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    /* TODO: Convertir grupo_muscular en una entidad para estandarizar */
-    @Column(name = "grupo_muscular", nullable = false)
-    private String grupoMuscular;
+    @Column(name = "descripcion")
+    private String descripcion;
+
+    @Enumerated(EnumType.STRING) 
+    @Column(name = "dia_semana", nullable = false)
+    private DiaSemana diaSemana;
 }
