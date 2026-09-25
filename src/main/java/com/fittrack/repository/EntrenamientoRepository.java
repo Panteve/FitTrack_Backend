@@ -1,5 +1,9 @@
 package com.fittrack.repository;
 
-public class EntrenamientoRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.fittrack.entity.Entrenamiento;
+
+public interface EntrenamientoRepository extends JpaRepository<Entrenamiento, Long> {
 
 }

@@ -1,5 +1,9 @@
 package com.fittrack.repository;
 
-public class UsuarioRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.fittrack.entity.Usuario;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 }
