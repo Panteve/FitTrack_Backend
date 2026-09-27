@@ -1,8 +1,15 @@
 package com.fittrack.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fittrack.login.AuthResponse;
+import com.fittrack.login.LoginRequest;
+import com.fittrack.login.RegisterRequest;
+import com.fittrack.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,14 +18,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 	
+	private AuthService authService;
+	
 	@PostMapping(value = "/login")
-	public String login() {
-		return "Login from Public endpoint";
+	public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+		return ResponseEntity.ok(authService.login(request));
 	}
 	
 	@PostMapping(value = "/register")
-	public String register() {
-		return "Register from Public endpoint";
+	public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+		return ResponseEntity.ok(authService.register(request));
 	}
 
 }
