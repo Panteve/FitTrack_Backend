@@ -13,8 +13,13 @@ import jakarta.persistence.Table;
 
 import com.fittrack.ejercicio.entity.Ejercicio;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name = "registro_serie")
+@Getter
+@Setter
 public class RegistroSerie {
 
     @Id
@@ -50,54 +55,4 @@ public class RegistroSerie {
         this.repeticiones = repeticiones;
         this.peso = peso;
     }
-    // Getters and Setters
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Entrenamiento getEntrenamiento() {
-        return this.entrenamiento;
-    }
-
-    public void setEntrenamiento(Entrenamiento entrenamiento) {
-        this.entrenamiento = entrenamiento;
-    }
-
-    public Ejercicio getEjercicio() {
-        return this.ejercicio;
-    }
-
-    public void setEjercicio(Ejercicio ejercicio) {
-        this.ejercicio = ejercicio;
-    }
-
-    public Integer getNumeroSerie() {
-        return this.numeroSerie;
-    }
-
-    public void setNumeroSerie(Integer numeroSerie) {
-        this.numeroSerie = numeroSerie;
-    }
-
-    public Integer getRepeticiones() {
-        return this.repeticiones;
-    }
-
-    public void setRepeticiones(Integer repeticiones) {
-        this.repeticiones = repeticiones;
-    }
-
-    public BigDecimal getPeso() {
-        return this.peso;
-    }
-
-    public void setPeso(BigDecimal peso) {
-        this.peso = peso;
-    }
-
 }

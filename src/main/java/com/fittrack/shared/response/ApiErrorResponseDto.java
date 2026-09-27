@@ -15,7 +15,7 @@ import java.time.Instant;
  * @param message   descripcion legible del error
  * @param path      ruta que se estaba procesando
  */
-public record ApiErrorResponse(
+public record ApiErrorResponseDto(
 		Instant timestamp,
 		int status,
 		String error,

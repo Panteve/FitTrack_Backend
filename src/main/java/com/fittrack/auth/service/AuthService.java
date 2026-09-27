@@ -2,12 +2,16 @@ package com.fittrack.auth.service;
 
 import java.time.LocalDate;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fittrack.auth.dto.AuthResponse;
-import com.fittrack.auth.dto.LoginRequest;
-import com.fittrack.auth.dto.RegisterRequest;
+import com.fittrack.auth.dto.AuthResponseDto;
+import com.fittrack.auth.dto.LoginRequestDto;
+import com.fittrack.auth.dto.RegisterRequestDto;
 import com.fittrack.security.JwtService;
+import com.fittrack.shared.exception.ApiException;
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
 
@@ -18,23 +22,31 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
 	private final UsuarioRepository usuarioRepository;
+	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	
-	public AuthResponse login(LoginRequest request) {
+	public AuthResponseDto login(LoginRequestDto request) {
 		return null;
 	}
 	
-	public AuthResponse register(RegisterRequest request) {
+	public AuthResponseDto register(RegisterRequestDto request) {
+		if (usuarioRepository.existsByCorreo(request.getCorreo())) {
+			throw new ApiException(HttpStatus.CONFLICT, "El correo ya está registrado");
+		}
 		Usuario usuario = Usuario.builder() //Se crea el objeto usuario utilizando el patrón de diseño Builder. 
-		        .nombre(request.getUsername())
+		        .nombre(request.getNombre())
 		        .correo(request.getCorreo())
-		        .contrasena(request.getPassword())
+		        .contrasena(passwordEncoder.encode(request.getContrasena()))
 		        .fechaRegistro(LocalDate.now())
 		        .build();
 
-		 usuarioRepository.save(usuario);//Se guarda el objeto usuario en la base de datos utilizando el repositorio usuarioRepository.
+		try {
+			usuarioRepository.saveAndFlush(usuario);
+		} catch (DataIntegrityViolationException exception) {
+			throw new ApiException(HttpStatus.CONFLICT, "El correo ya está registrado");
+		}
 
-		 return AuthResponse.builder()
+		 return AuthResponseDto.builder()
 		        .token(jwtService.getToken(usuario)) //se obtiene un token JWT para el usuario recién registrado utilizando el servicio jwtService 
 				.build();
 	}

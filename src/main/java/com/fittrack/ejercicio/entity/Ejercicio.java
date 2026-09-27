@@ -11,8 +11,13 @@ import jakarta.persistence.Table;
 
 import com.fittrack.usuario.entity.Usuario;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name = "ejercicio")
+@Getter
+@Setter
 public class Ejercicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,39 +42,6 @@ public class Ejercicio {
     public Ejercicio(Usuario usuario, String nombre, String grupoMuscular) {
         this.usuario = usuario;
         this.nombre = nombre;
-        this.grupoMuscular = grupoMuscular;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return this.usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getNombre() {
-        return this.nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getGrupoMuscular() {
-        return this.grupoMuscular;
-    }
-
-    public void setGrupoMuscular(String grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
     }
 

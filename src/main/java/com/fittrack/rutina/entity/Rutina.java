@@ -14,8 +14,13 @@ import jakarta.persistence.Table;
 import com.fittrack.rutina.enums.DiaSemana;
 import com.fittrack.usuario.entity.Usuario;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name = "rutina")
+@Getter
+@Setter
 public class Rutina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,48 +48,6 @@ public class Rutina {
         this.usuario = usuario;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.diaSemana = diaSemana;
-    }
-
-    // Getters and Setters
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return this.usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getNombre() {
-        return this.nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return this.descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public DiaSemana getDiaSemana() {
-        return this.diaSemana;
-    }
-
-    public void setDiaSemana(DiaSemana diaSemana) {
         this.diaSemana = diaSemana;
     }
 }
