@@ -4,6 +4,9 @@ import java.time.LocalDate;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +28,18 @@ public class AuthService {
 	private final UsuarioRepository usuarioRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
+	private final AuthenticationManager authenticationManager;
 	
 	public AuthResponseDto login(LoginRequestDto request) {
-		return null;
+		authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+						request.getCorreo(), request.getContrasena()));
+		UserDetails usuario = usuarioRepository.findByCorreo(request.getCorreo()).orElseThrow();
+		String token = jwtService.getToken(usuario);
+		return AuthResponseDto.builder()
+				.token(token)
+				.build();			
+
 	}
 	
 
