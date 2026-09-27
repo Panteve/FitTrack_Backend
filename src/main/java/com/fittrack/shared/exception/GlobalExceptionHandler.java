@@ -12,12 +12,6 @@ import com.fittrack.shared.response.ApiErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * Manejador global de errores de la API.
- *
- * <p>Al ser transversal, cualquier modulo que lance una excepcion obtiene la misma
- * forma de respuesta sin duplicar la logica de conversion en cada controlador.</p>
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -34,11 +28,7 @@ public class GlobalExceptionHandler {
 		return build(HttpStatus.FORBIDDEN, "No tiene permisos para acceder a este recurso.", request);
 	}
 
-	/**
-	 * Red de seguridad para evitar que una excepcion no controlada escape con la
-	 * respuesta por defecto de Spring, que no cumple el contrato de
-	 * {@link ApiErrorResponse} y podria filtrar detalles internos.
-	 */
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
 		return build(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrio un error inesperado.", request);
