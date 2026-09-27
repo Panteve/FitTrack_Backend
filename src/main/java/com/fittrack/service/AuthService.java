@@ -1,5 +1,7 @@
 package com.fittrack.service;
 
+import java.time.LocalDate;
+
 import org.springframework.stereotype.Service;
 
 import com.fittrack.entity.Usuario;
@@ -18,11 +20,12 @@ public class AuthService {
 	}
 	
 	public AuthResponse register(RegisterRequest request) {
-		Usuario usuario = Usuario.build()
-		        .nombre(request.getNombre())
+		Usuario usuario = Usuario.builder()
+		        .nombre(request.getUsername())
 		        .correo(request.getCorreo())
-		        .contrasena(request.getContrasena())
+		        .contrasena(request.getPassword())
 		        .fechaRegistro(LocalDate.now())
 		        .build();
+		 return null;
 	}
 }
