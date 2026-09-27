@@ -3,6 +3,11 @@ package com.fittrack.security;
 import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -11,20 +16,42 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
+
+	private final JwtService jwtService;
+	private final UserDetailsService userDetailsService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) //Metodo para realizar todos los filtros relacionados al token
 			throws ServletException, IOException {
 		
 		final String token = getTokenFromRequest(request);  //Obtener el token del request
-			
+		final String correo;
+		
 			if (token == null) {
 				filterChain.doFilter(request, response);
 				return;
+			}
+
+			correo = jwtService.getCorreoFromToken(token); //Extraer el correo del token
+
+			if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) { //Verificar si el correo es válido y si no hay autenticación en el contexto de seguridad
+				UserDetails userDetails = userDetailsService.loadUserByUsername(correo); //Cargar
+				
+				if (jwtService.isTokenValid(token, userDetails)) { //Verificar si el token es válido
+					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+							userDetails,
+							 null,
+							  userDetails.getAuthorities());
+					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					
+					SecurityContextHolder.getContext().setAuthentication(authToken); //Establecer la autenticación en el contexto de seguridad
+				}
 			}
 			
 			filterChain.doFilter(request, response);

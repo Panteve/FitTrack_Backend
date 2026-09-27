@@ -30,7 +30,8 @@ public class AuthService {
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
 	
-	public AuthResponseDto login(LoginRequestDto request) {
+	public AuthResponseDto login(LoginRequestDto request) { //Metodo que maneja la lógica de inicio de sesión.
+	//  Recibe un objeto LoginRequestDto que contiene el correo y la contraseña del usuario.
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						request.getCorreo(), request.getContrasena()));
