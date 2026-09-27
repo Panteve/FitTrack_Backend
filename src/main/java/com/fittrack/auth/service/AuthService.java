@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fittrack.auth.dto.AuthResponseDto;
 import com.fittrack.auth.dto.LoginRequestDto;
@@ -29,6 +30,8 @@ public class AuthService {
 		return null;
 	}
 	
+
+	@Transactional
 	public AuthResponseDto register(RegisterRequestDto request) {
 		if (usuarioRepository.existsByCorreo(request.getCorreo())) {
 			throw new ApiException(HttpStatus.CONFLICT, "El correo ya está registrado");

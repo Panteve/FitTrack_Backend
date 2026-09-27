@@ -35,6 +35,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Spring Boot Starter Validation (Para validar los DTOs con @Valid) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- Lombok (Opcional: simplifica constructores, getters y setters) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
