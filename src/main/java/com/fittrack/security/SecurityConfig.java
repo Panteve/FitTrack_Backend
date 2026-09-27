@@ -4,8 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import static org.springframework.security.config.Customizer.withDefaults;
+
+import com.fittrack.jwt.jwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	// Metodo para restringir el acceso a las rutas
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {  // Metodo para restringir el acceso a las rutas
+		jwtAuthenticationFilter jwtAuthenticationFilter;
 		return http
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authRequest -> 
@@ -24,7 +26,11 @@ public class SecurityConfig {
 						.requestMatchers("/auth/login").permitAll()
 						.anyRequest().authenticated()
 						)
-				.formLogin(withDefaults())
+				.sessionManagement(sessionManager ->
+					sessionManager
+					.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.authenticationProvider(authProvider)
+					.addFilterBefore(jwtAuthenticationFilter, )
 				.build();
 	}
 }
