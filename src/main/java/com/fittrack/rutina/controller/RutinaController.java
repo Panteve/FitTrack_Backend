@@ -1,7 +1,7 @@
 package com.fittrack.rutina.controller;
 
 import com.fittrack.rutina.service.RutinaService;
-import com.fittrack.usuario.entity.Usuario;
+import com.fittrack.security.UsuarioAutenticado;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,9 +21,10 @@ public class RutinaController {
 
     @GetMapping("/mis-rutinas")
     public String obtenerMisRutinas(
-            @AuthenticationPrincipal Usuario usuario) {
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
 
-        Long usuarioId = usuario.getId();
+        Long usuarioId = usuario.id();
+        String nombreUsuario = usuario.correo();
 
         return "Obteniendo rutinas para el usuario con ID: " + usuarioId;
     }
