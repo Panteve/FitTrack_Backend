@@ -1,5 +1,8 @@
 package com.fittrack.rutina.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import com.fittrack.rutina.enums.DiaSemana;
@@ -39,6 +44,13 @@ public class Rutina {
     @Enumerated(EnumType.STRING)
     @Column(name = "dia_semana", nullable = false)
     private DiaSemana diaSemana;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status = true;
+
+    @OneToMany(mappedBy = "rutina")
+    @OrderBy("orden ASC")
+    private List<RutinaEjercicio> rutinaEjercicios = new ArrayList<>();
 
     // Constructor
     public Rutina() {
