@@ -31,26 +31,15 @@ public class EjercicioController {
         this.ejercicioService = ejercicioService;
     }
 
-    /**
-     * Lista los ejercicios pertenecientes al usuario autenticado.
-     *
-     * @param usuario identidad obtenida del JWT
-     * @return ejercicios pertenecientes al usuario
-     */
-    @GetMapping("/mis-ejercicios")
+ 
+    @GetMapping("/mis-ejercicios")//endpoint para obtener los ejercicios del usuario autenticado
     public ResponseEntity<List<EjercicioResponse>> obtenerMisEjercicios(
-            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+            @AuthenticationPrincipal UsuarioAutenticado usuario) { //usuario autenticado obtenido del JWT
         return ResponseEntity.ok(ejercicioService.listarTodos(usuario.id()));
     }
 
-    /**
-     * Obtiene un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param id identificador del ejercicio
-     * @param usuario identidad obtenida del JWT
-     * @return ejercicio encontrado
-     */
-    @GetMapping("/{id}")
+
+    @GetMapping("/{id}")//endpoint para obtener un ejercicio por su id
     public ResponseEntity<EjercicioResponse> obtenerEjercicioPorId(
             @PathVariable Long id,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
@@ -58,14 +47,8 @@ public class EjercicioController {
                 ejercicioService.obtenerPorId(id, usuario.id()));
     }
 
-    /**
-     * Crea un ejercicio para el usuario autenticado.
-     *
-     * @param request datos del ejercicio
-     * @param usuario identidad obtenida del JWT
-     * @return ejercicio creado
-     */
-    @PostMapping
+
+    @PostMapping///endpoint para crear un nuevo ejercicio
     public ResponseEntity<EjercicioResponse> crearEjercicio(
             @Valid @RequestBody EjercicioRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
@@ -73,33 +56,20 @@ public class EjercicioController {
         return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
     }
 
-    /**
-     * Actualiza un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param id identificador del ejercicio
-     * @param request nuevos datos del ejercicio
-     * @param usuario identidad obtenida del JWT
-     * @return ejercicio actualizado
-     */
-    @PutMapping("/{id}")
+
+    @PutMapping("/{id}") //endpoint para actualizar un ejercicio existente
     public ResponseEntity<EjercicioResponse> actualizarEjercicio(
             @PathVariable Long id,
-            @Valid @RequestBody EjercicioRequest request,
+            @Valid @RequestBody EjercicioRequest request, //datos del ejercicio a actualizar
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         return ResponseEntity.ok(ejercicioService.actualizar(id, request, usuario.id()));
     }
 
-    /**
-     * Elimina un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param id identificador del ejercicio
-     * @param usuario identidad obtenida del JWT
-     * @return respuesta sin contenido
-     */
+    //Método para eliminar un ejercicio, se realiza una eliminación lógica en lugar de una eliminación física
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEjercicio(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+            @PathVariable Long id, //id del ejercicio a eliminar
+            @AuthenticationPrincipal UsuarioAutenticado usuario) { //usuario autenticado que realiza la eliminación
         ejercicioService.logicDelete(id, usuario.id());
         return ResponseEntity.noContent().build();
     }
