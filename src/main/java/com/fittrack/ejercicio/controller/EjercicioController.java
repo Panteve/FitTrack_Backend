@@ -1,5 +1,7 @@
 package com.fittrack.ejercicio.controller;
 
+import com.fittrack.ejercicio.dto.EjercicioRequest;
+import com.fittrack.ejercicio.dto.EjercicioResponse;
 import com.fittrack.ejercicio.service.EjercicioService;
 import com.fittrack.security.UsuarioAutenticado;
 
@@ -29,27 +31,56 @@ public class EjercicioController {
         this.ejercicioService = ejercicioService;
     }
 
-        @GetMapping("/mis-ejercicios")
+    /**
+     * Lista los ejercicios pertenecientes al usuario autenticado.
+     *
+     * @param usuario identidad obtenida del JWT
+     * @return ejercicios pertenecientes al usuario
+     */
+    @GetMapping("/mis-ejercicios")
     public ResponseEntity<List<EjercicioResponse>> obtenerMisEjercicios(
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        return ResponseEntity.ok(ejercicioService.listarPorUsuario(usuario.id()));
+        return ResponseEntity.ok(ejercicioService.listarTodos(usuario.id()));
     }
 
+    /**
+     * Obtiene un ejercicio perteneciente al usuario autenticado.
+     *
+     * @param id identificador del ejercicio
+     * @param usuario identidad obtenida del JWT
+     * @return ejercicio encontrado
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<EjercicioResponse> obtenerEjercicio(
+    public ResponseEntity<EjercicioResponse> obtenerEjercicioPorId(
             @PathVariable Long id,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        return ResponseEntity.ok(ejercicioService.obtener(id, usuario.id()));
+        return ResponseEntity.ok(
+                ejercicioService.obtenerPorId(id, usuario.id()));
     }
 
+    /**
+     * Crea un ejercicio para el usuario autenticado.
+     *
+     * @param request datos del ejercicio
+     * @param usuario identidad obtenida del JWT
+     * @return ejercicio creado
+     */
     @PostMapping
     public ResponseEntity<EjercicioResponse> crearEjercicio(
             @Valid @RequestBody EjercicioRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        EjercicioResponse creado = ejercicioService.crear(request, usuario.id());
+        EjercicioResponse creado = ejercicioService.guardar(request, usuario.id());
         return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
     }
 
+    /**
+     * Actualiza un ejercicio perteneciente al usuario autenticado.
+     *
+     * @param id identificador del ejercicio
+     * @param request nuevos datos del ejercicio
+     * @param usuario identidad obtenida del JWT
+     * @return ejercicio actualizado
+     */
     @PutMapping("/{id}")
     public ResponseEntity<EjercicioResponse> actualizarEjercicio(
             @PathVariable Long id,
@@ -58,6 +89,13 @@ public class EjercicioController {
         return ResponseEntity.ok(ejercicioService.actualizar(id, request, usuario.id()));
     }
 
+    /**
+     * Elimina un ejercicio perteneciente al usuario autenticado.
+     *
+     * @param id identificador del ejercicio
+     * @param usuario identidad obtenida del JWT
+     * @return respuesta sin contenido
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEjercicio(
             @PathVariable Long id,

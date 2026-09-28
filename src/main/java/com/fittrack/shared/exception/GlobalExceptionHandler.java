@@ -72,7 +72,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ApiErrorResponseDto> handleDataIntegrityViolation(DataIntegrityViolationException ex,
 			HttpServletRequest request) {
-		return build(HttpStatus.CONFLICT, "El correo ya está registrado.", request);
+		return build(
+				HttpStatus.CONFLICT,
+				"La operación no se puede completar porque el recurso está relacionado con otros datos.",
+				request);
 	}
 	/**
 	 * Cualquier otra excepcion. Se registra con su stack trace completo para que el fallo
