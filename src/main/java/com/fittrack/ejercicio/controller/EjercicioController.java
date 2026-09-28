@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,7 +47,7 @@ public class EjercicioController {
     /**
      * Obtiene un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id identificador del ejercicio
+     * @param id      identificador del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return ejercicio encontrado
      */
@@ -70,13 +71,15 @@ public class EjercicioController {
             @Valid @RequestBody EjercicioRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         EjercicioResponse creado = ejercicioService.guardar(request, usuario.id());
-        return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(creado);
     }
 
     /**
      * Actualiza un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id identificador del ejercicio
+     * @param id      identificador del ejercicio
      * @param request nuevos datos del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return ejercicio actualizado
@@ -92,7 +95,7 @@ public class EjercicioController {
     /**
      * Elimina un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id identificador del ejercicio
+     * @param id      identificador del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return respuesta sin contenido
      */
