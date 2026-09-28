@@ -39,7 +39,7 @@ public class EjercicioService {
      */
     @Transactional(readOnly = true)
     public List<EjercicioResponse> listarTodos(Long usuarioId) {
-        return ejercicioRepository.findAllByUsuario_Id(usuarioId)
+        return ejercicioRepository.findAllByUsuario_IdAndStatusTrue(usuarioId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -99,15 +99,9 @@ public class EjercicioService {
         return toResponse(ejercicio);
     }
 
-    /**
-     * Elimina un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param ejercicioId identificador del ejercicio
-     * @param usuarioId identificador del usuario autenticado
-     * @throws ApiException si no existe, pertenece a otro usuario o está en uso
-     */
+
     @Transactional
-    public EjercicioResponse logicDelete(
+    public EjercicioResponse logicDelete( // Método para realizar una eliminación lógica de un ejercicio
             Long ejercicioId,
             Long usuarioId) {
         Ejercicio ejercicio = buscarEjercicioPropio(ejercicioId, usuarioId);
