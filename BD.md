@@ -19,9 +19,14 @@
 | `duracion_minutos` | `int4` |  |
 | `fecha` | `date` |  |
 | `notas` | `varchar` |  Nullable |
-| `url_foto` | `varchar` |  |
+| `url_foto` | `varchar` |  Nullable |
+| `status` | `bool` |  Not Null Default: `true` |
 | `id_rutina` | `int8` |  |
 | `id_usuario` | `int8` |  |
+
+`entrenamiento.status` implementa el borrado lógico. La columna `url_foto`
+guarda la ruta interna de la imagen dentro del bucket privado de Supabase
+Storage, no una URL firmada temporal.
 
 ## Table `registro_serie`
 
@@ -34,7 +39,15 @@
 | `peso` | `numeric` |  |
 | `repeticiones` | `int4` |  |
 | `id_ejercicio` | `int8` |  |
+| `id_rutina_ejercicio_origen` | `int8` |  |
+| `orden_ejercicio` | `int4` |  |
 | `id_entrenamiento` | `int8` |  |
+
+Cada registro conserva el ejercicio, el ID original del bloque de
+`rutina_ejercicio` y su orden al finalizar el entrenamiento. El ID de origen no
+es una clave foránea: funciona como una referencia histórica para que una
+edición posterior de la rutina no rompa entrenamientos guardados. La combinación
+`id_entrenamiento`, `id_rutina_ejercicio_origen` y `numero_serie` es única.
 
 ## Table `rutina`
 

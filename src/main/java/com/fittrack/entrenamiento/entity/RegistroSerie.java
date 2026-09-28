@@ -17,7 +17,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "registro_serie")
+@Table(
+        name = "registro_serie",
+        uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+                name = "uk_registro_serie_entrenamiento_bloque_numero",
+                columnNames = {
+                        "id_entrenamiento",
+                        "id_rutina_ejercicio_origen",
+                        "numero_serie"
+                }))
 @Getter
 @Setter
 public class RegistroSerie {
@@ -26,13 +34,19 @@ public class RegistroSerie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "id_entrenamiento", nullable = false)
     private Entrenamiento entrenamiento;
 
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "id_ejercicio", nullable = false)
     private Ejercicio ejercicio;
+
+    @Column(name = "id_rutina_ejercicio_origen", nullable = false)
+    private Long rutinaEjercicioId;
+
+    @Column(name = "orden_ejercicio", nullable = false)
+    private Integer ordenEjercicio;
 
     @Column(name = "numero_serie", nullable = false)
     private Integer numeroSerie;
@@ -43,14 +57,30 @@ public class RegistroSerie {
     @Column(name = "peso", nullable = false, precision = 10, scale = 2)
     private BigDecimal peso;
 
-    // Constructor
+    /** Constructor requerido por JPA. */
     public RegistroSerie() {
     }
 
-    public RegistroSerie(Entrenamiento entrenamiento, Ejercicio ejercicio, Integer numeroSerie, Integer repeticiones,
+    /**
+     * Crea el registro de una serie realizada.
+     *
+     * @param ejercicio ejercicio realizado
+     * @param rutinaEjercicioId identificador original del bloque de rutina
+     * @param ordenEjercicio posición del bloque al finalizar el entrenamiento
+     * @param numeroSerie número de la serie dentro del bloque
+     * @param repeticiones repeticiones realizadas
+     * @param peso peso utilizado
+     */
+    public RegistroSerie(
+            Ejercicio ejercicio,
+            Long rutinaEjercicioId,
+            Integer ordenEjercicio,
+            Integer numeroSerie,
+            Integer repeticiones,
             BigDecimal peso) {
-        this.entrenamiento = entrenamiento;
         this.ejercicio = ejercicio;
+        this.rutinaEjercicioId = rutinaEjercicioId;
+        this.ordenEjercicio = ordenEjercicio;
         this.numeroSerie = numeroSerie;
         this.repeticiones = repeticiones;
         this.peso = peso;

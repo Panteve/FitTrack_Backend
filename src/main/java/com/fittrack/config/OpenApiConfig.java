@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         info = @Info(
                 title = "FitTrack API",
                 version = "v1",
-                description = "API para administrar usuarios, ejercicios y rutinas."),
+                description = "API para administrar usuarios, ejercicios, rutinas y entrenamientos."),
         security = @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH))
 @SecurityScheme(
         name = OpenApiConfig.BEARER_AUTH,

@@ -10,6 +10,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -59,7 +61,31 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiErrorResponseDto> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
 			HttpServletRequest request) {
 		return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-				"El Content-Type '" + ex.getContentType() + "' no está soportado. Usa application/json.", request);
+				"El Content-Type '" + ex.getContentType()
+						+ "' no está soportado para este endpoint.",
+				request);
+	}
+
+	/** Archivos multipart que superan el límite configurado. */
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<ApiErrorResponseDto> handleMaxUploadSize(
+			MaxUploadSizeExceededException ex,
+			HttpServletRequest request) {
+		return build(
+				HttpStatus.PAYLOAD_TOO_LARGE,
+				"La fotografía no puede superar 5 MB.",
+				request);
+	}
+
+	/** Formularios multipart que no contienen una parte obligatoria. */
+	@ExceptionHandler(MissingServletRequestPartException.class)
+	public ResponseEntity<ApiErrorResponseDto> handleMissingRequestPart(
+			MissingServletRequestPartException ex,
+			HttpServletRequest request) {
+		return build(
+				HttpStatus.BAD_REQUEST,
+				"Falta la parte obligatoria '" + ex.getRequestPartName() + "'.",
+				request);
 	}
 
 	/** Metodo HTTP no implementado por el endpoint (por ejemplo GET sobre un POST). */
