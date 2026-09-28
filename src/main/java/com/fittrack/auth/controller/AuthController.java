@@ -12,12 +12,14 @@ import com.fittrack.auth.dto.LoginRequestDto;
 import com.fittrack.auth.dto.RegisterRequestDto;
 import com.fittrack.auth.service.AuthService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@SecurityRequirements
 public class AuthController {
 
 	private final AuthService authService;
