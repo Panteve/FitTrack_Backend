@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fittrack.rutina.dto.RutinaDetalleDto;
 import com.fittrack.rutina.dto.RutinaDto;
 import com.fittrack.rutina.service.RutinaService;
 import com.fittrack.security.UsuarioAutenticado;
+
 
 @RestController
 @RequestMapping("/rutinas")
@@ -22,11 +25,19 @@ public class RutinaController {
         this.rutinaService = rutinaService;
     }
 
-    
+
     @GetMapping
     public ResponseEntity<List<RutinaDto>> obtenerMisRutinas(
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         return ResponseEntity.ok(
                 rutinaService.obtenerRutinasPorUsuario(usuario.id()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RutinaDetalleDto> obtenerRutinaPorId(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return ResponseEntity.ok(
+                rutinaService.obtenerRutinaPorId(id, usuario.id()));
     }
 }
