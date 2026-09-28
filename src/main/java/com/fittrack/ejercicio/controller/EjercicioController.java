@@ -1,14 +1,8 @@
 package com.fittrack.ejercicio.controller;
 
-import com.fittrack.ejercicio.dto.EjercicioRequest;
-import com.fittrack.ejercicio.dto.EjercicioResponse;
-import com.fittrack.ejercicio.service.EjercicioService;
-import com.fittrack.security.UsuarioAutenticado;
-
-import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +13,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fittrack.ejercicio.dto.EjercicioRequest;
+import com.fittrack.ejercicio.dto.EjercicioResponse;
+import com.fittrack.ejercicio.service.EjercicioService;
+import com.fittrack.security.UsuarioAutenticado;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/ejercicios")
@@ -45,7 +46,7 @@ public class EjercicioController {
     /**
      * Obtiene un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id      identificador del ejercicio
+     * @param id identificador del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return ejercicio encontrado
      */
@@ -69,15 +70,13 @@ public class EjercicioController {
             @Valid @RequestBody EjercicioRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         EjercicioResponse creado = ejercicioService.guardar(request, usuario.id());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(creado);
+        return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
     }
 
     /**
      * Actualiza un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id      identificador del ejercicio
+     * @param id identificador del ejercicio
      * @param request nuevos datos del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return ejercicio actualizado
@@ -93,7 +92,7 @@ public class EjercicioController {
     /**
      * Elimina un ejercicio perteneciente al usuario autenticado.
      *
-     * @param id      identificador del ejercicio
+     * @param id identificador del ejercicio
      * @param usuario identidad obtenida del JWT
      * @return respuesta sin contenido
      */
@@ -101,7 +100,7 @@ public class EjercicioController {
     public ResponseEntity<Void> eliminarEjercicio(
             @PathVariable Long id,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        ejercicioService.eliminar(id, usuario.id());
+        ejercicioService.logicDelete(id, usuario.id());
         return ResponseEntity.noContent().build();
     }
 }

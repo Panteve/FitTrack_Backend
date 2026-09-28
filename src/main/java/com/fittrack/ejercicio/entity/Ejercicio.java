@@ -34,16 +34,20 @@ public class Ejercicio {
     /* TODO: Convertir grupo_muscular en una entidad para estandarizar */
     @Column(name = "grupo_muscular", nullable = false)
     private String grupoMuscular;
+
+    @Column(name = "status", nullable = false)
+    private Boolean status = true; // Por defecto, el ejercicio está activo
     
     //Constructor
 
     public Ejercicio() {
     }
 
-    public Ejercicio(Usuario usuario, String nombre, String grupoMuscular) {
+    public Ejercicio(Usuario usuario, String nombre, String grupoMuscular, Boolean status) {
         this.usuario = usuario;
         this.nombre = nombre;
         this.grupoMuscular = grupoMuscular;
+        this.status = status;
     }
 
 }

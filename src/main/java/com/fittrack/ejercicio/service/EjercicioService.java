@@ -71,7 +71,9 @@ public class EjercicioService {
         Ejercicio ejercicio = new Ejercicio(
                 usuario,
                 request.nombre().trim(),
-                request.grupoMuscular().trim());
+                request.grupoMuscular().trim(),
+                true // Por defecto, el ejercicio está activo
+        );
 
         return toResponse(ejercicioRepository.save(ejercicio));
     }
@@ -105,16 +107,17 @@ public class EjercicioService {
      * @throws ApiException si no existe, pertenece a otro usuario o está en uso
      */
     @Transactional
-    public void eliminar(Long ejercicioId, Long usuarioId) {
+    public EjercicioResponse logicDelete(
+            Long ejercicioId,
+            Long usuarioId) {
         Ejercicio ejercicio = buscarEjercicioPropio(ejercicioId, usuarioId);
 
-        if (rutinaEjercicioRepository.existsByEjercicio_Id(ejercicioId)) {
-            throw new ApiException(
-                    HttpStatus.CONFLICT,
-                    "No se puede eliminar el ejercicio porque está asociado a una rutina.");
+        if(ejercicio == null) {
+            return null;
         }
+        ejercicio.setStatus(false); // Marcar como eliminado
 
-        ejercicioRepository.delete(ejercicio);
+        return toResponse(ejercicio);
     }
 
     private Ejercicio buscarEjercicioPropio(Long ejercicioId, Long usuarioId) {
