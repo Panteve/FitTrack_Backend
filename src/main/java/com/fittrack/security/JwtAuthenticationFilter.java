@@ -21,7 +21,8 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter{
+public class JwtAuthenticationFilter extends OncePerRequestFilter{ //Clase que extiende OncePerRequestFilter para crear un
+//  filtro de autenticación JWT personalizado.
 
 	private final JwtService jwtService;
 
