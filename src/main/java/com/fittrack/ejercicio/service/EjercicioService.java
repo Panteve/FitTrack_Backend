@@ -10,7 +10,6 @@ import com.fittrack.ejercicio.dto.EjercicioRequest;
 import com.fittrack.ejercicio.dto.EjercicioResponse;
 import com.fittrack.ejercicio.entity.Ejercicio;
 import com.fittrack.ejercicio.repository.EjercicioRepository;
-import com.fittrack.rutina.repository.RutinaEjercicioRepository;
 import com.fittrack.shared.exception.ApiException;
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
@@ -20,15 +19,13 @@ public class EjercicioService {
 
     private final EjercicioRepository ejercicioRepository;
     private final UsuarioRepository usuarioRepository;
-    private final RutinaEjercicioRepository rutinaEjercicioRepository;
+
 
     public EjercicioService(
             EjercicioRepository ejercicioRepository,
-            UsuarioRepository usuarioRepository,
-            RutinaEjercicioRepository rutinaEjercicioRepository) {
+            UsuarioRepository usuarioRepository) {
         this.ejercicioRepository = ejercicioRepository;
         this.usuarioRepository = usuarioRepository;
-        this.rutinaEjercicioRepository = rutinaEjercicioRepository;
     }
 
     /**
