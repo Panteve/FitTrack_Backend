@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.fittrack.usuario.entity.Usuario;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,15 +27,17 @@ public class JwtService {
         this.secretKey = secretKey;
     }
 
-    public String getToken(UserDetails usuario) {
-        return getToken(new HashMap<>(), usuario);
+    public String getToken(Usuario usuario) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("usuarioId", usuario.getId());
+        return getToken(extraClaims, usuario);
     }
 
     private String getToken(Map<String, Object> extraclaims, UserDetails usuario) { //Método que genera un token JWT para un usuario dado.
     //  Recibe un mapa de reclamos adicionales y un objeto UserDetails que representa al usuario autenticado.
         return Jwts.builder()
                 .setClaims(extraclaims)
-                .setSubject(usuario.getUsername())
+                .claim("correo", usuario.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // Token válido por 1 hora
                 .signWith(getKey(), SignatureAlgorithm.HS256) // Firma el token utilizando la clave secreta y el
@@ -46,8 +50,14 @@ public class JwtService {
     }
 
     public String getCorreoFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject); //Obtiene el correo electrónico del usuario a partir del token JWT.
-        //getSubject() devuelve el valor del "subject" (sujeto) del token, que en este caso es el correo electrónico del usuario.
+        return getClaimFromToken(token, claims -> claims.get("correo", String.class));
+    }
+
+    public Long getUsuarioIdFromToken(String token) {
+        Number usuarioId = getClaimFromToken(
+                token,
+                claims -> claims.get("usuarioId", Number.class));
+        return usuarioId.longValue();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

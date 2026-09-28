@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthResponseDto {
 	String token;
+	String nombre;
 }

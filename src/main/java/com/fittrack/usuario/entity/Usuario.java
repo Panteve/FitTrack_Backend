@@ -2,6 +2,7 @@ package com.fittrack.usuario.entity;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +44,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
