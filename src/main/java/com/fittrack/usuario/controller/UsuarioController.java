@@ -27,7 +27,7 @@ public class UsuarioController {
             @RequestBody CambiarPasswordRequest request,// RequestBody para recibir los datos de la solicitud
             @AuthenticationPrincipal UsuarioAutenticado usuario) {// UsuarioAutenticado obtenido del contexto de seguridad
 
-        usuarioService.cambiarPassword(
+        usuarioService.cambiarPassword(// Llamada al servicio para cambiar la contraseña
                 usuario,
                 request.getPasswordActual(),
                 request.getPasswordNueva()

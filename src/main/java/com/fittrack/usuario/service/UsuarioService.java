@@ -29,20 +29,20 @@ public class UsuarioService {
 
         Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
                 .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
+                        new RuntimeException("Usuario no encontrado"));// Buscar el usuario en la base de datos por su ID
 
         if (!passwordEncoder.matches(
                 passwordActual,
-                usuario.getPassword())) {
+                usuario.getPassword())) {// Verificar si la contraseña actual proporcionada coincide con la almacenada en la base de datos
 
             throw new RuntimeException(
                     "La contraseña actual es incorrecta");
         }
 
-        usuario.setContrasena(
+        usuario.setContrasena(// Actualizar la contraseña del usuario con la nueva contraseña codificada
                 passwordEncoder.encode(passwordNueva)
         );
 
-        usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
     }
 }
