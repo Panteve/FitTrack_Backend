@@ -34,4 +34,16 @@ public interface RutinaRepository extends JpaRepository<Rutina, Long> {
             "rutinaEjercicios.ejercicio"
     })
     Optional<Rutina> findDistinctByIdAndUsuario_Id(Long rutinaId, Long usuarioId);
+
+    /**
+     * Busca una rutina activa de un usuario sin cargar sus ejercicios asociados.
+     * Se usa al reemplazar la configuracion completa, donde la coleccion anterior
+     * se descarta y no conviene traerla.
+     *
+     * @param rutinaId identificador de la rutina
+     * @param usuarioId identificador del usuario
+     * @return rutina activa encontrada o vacio si no existe, esta inactiva
+     *         o pertenece a otro usuario
+     */
+    Optional<Rutina> findByIdAndUsuario_IdAndStatusTrue(Long rutinaId, Long usuarioId);
 }

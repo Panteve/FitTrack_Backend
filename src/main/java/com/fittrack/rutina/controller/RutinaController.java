@@ -10,10 +10,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fittrack.rutina.dto.RutinaActualizarDto;
 import com.fittrack.rutina.dto.RutinaCrearDto;
 import com.fittrack.rutina.dto.RutinaDetalleDto;
 import com.fittrack.rutina.dto.RutinaDto;
@@ -45,13 +47,6 @@ public class RutinaController {
                 rutinaService.obtenerRutinaPorId(id, usuario.id()));
     }
 
-    /**
-     * Crea una rutina para el usuario autenticado con sus ejercicios asociados.
-     *
-     * @param request datos de la rutina y sus ejercicios
-     * @param usuario identidad obtenida del JWT
-     * @return rutina creada con el detalle de sus ejercicios
-     */
     @PostMapping
     public ResponseEntity<RutinaDetalleDto> crearRutina(
             @Valid @RequestBody RutinaCrearDto request,
@@ -61,6 +56,24 @@ public class RutinaController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(rutinaCreada);
+    }
+
+    /**
+     * Reemplaza por completo una rutina del usuario autenticado junto con su
+     * configuracion de ejercicios.
+     *
+     * @param id identificador de la rutina
+     * @param request datos nuevos de la rutina y sus ejercicios
+     * @param usuario identidad obtenida del JWT
+     * @return rutina actualizada con el detalle de sus ejercicios
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<RutinaDetalleDto> actualizarRutina(
+            @PathVariable Long id,
+            @Valid @RequestBody RutinaActualizarDto request,
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return ResponseEntity.ok(
+                rutinaService.actualizarRutina(id, request, usuario.id()));
     }
 
 }

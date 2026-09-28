@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fittrack.ejercicio.entity.Ejercicio;
 import com.fittrack.ejercicio.repository.EjercicioRepository;
+import com.fittrack.rutina.dto.RutinaActualizarDto;
 import com.fittrack.rutina.dto.RutinaCrearDto;
 import com.fittrack.rutina.dto.RutinaDetalleDto;
 import com.fittrack.rutina.dto.RutinaDto;
@@ -94,7 +95,72 @@ public class RutinaService {
                 normalizarDescripcion(request.descripcion()),
                 request.diaSemana()));
 
-        List<RutinaEjercicio> asociaciones = request.ejercicios()
+        List<RutinaEjercicio> asociaciones = construirAsociaciones(
+                rutina,
+                request.ejercicios(),
+                ejerciciosPorId);
+
+        rutina.setRutinaEjercicios(
+                rutinaEjercicioRepository.saveAll(asociaciones));
+
+        return toDetalleDto(rutina);
+    }
+
+    /**
+     * Reemplaza por completo los datos editables de una rutina y su configuracion
+     * de ejercicios. Las asociaciones anteriores se eliminan y se vuelven a crear
+     * desde la lista original, por lo que sus identificadores internos pueden cambiar.
+     *
+     * @param rutinaId identificador de la rutina a actualizar
+     * @param request datos nuevos de la rutina y sus ejercicios
+     * @param usuarioId identificador del usuario autenticado
+     * @return rutina actualizada con el detalle de sus ejercicios
+     * @throws ApiException si la rutina no existe, esta inactiva, pertenece a
+     *         otro usuario o alguno de los ejercicios no existe
+     */
+    @Transactional
+    public RutinaDetalleDto actualizarRutina(
+            Long rutinaId,
+            RutinaActualizarDto request,
+            Long usuarioId) {
+        // Se validan los ejercicios antes de tocar la rutina: si falta alguno,
+        // la transaccion falla sin haber modificado nada.
+        Map<Long, Ejercicio> ejerciciosPorId = buscarEjercicios(
+                request.ejercicios());
+
+        Rutina rutina = rutinaRepository
+                .findByIdAndUsuario_IdAndStatusTrue(rutinaId, usuarioId)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.NOT_FOUND,
+                        "Rutina no encontrada."));
+
+        rutina.setNombre(request.nombre().trim());
+        rutina.setDescripcion(normalizarDescripcion(request.descripcion()));
+        rutina.setDiaSemana(request.diaSemana());
+
+        rutinaEjercicioRepository.deleteAllByRutinaId(rutinaId);
+
+        List<RutinaEjercicio> asociaciones = construirAsociaciones(
+                rutina,
+                request.ejercicios(),
+                ejerciciosPorId);
+
+        rutina.setRutinaEjercicios(
+                rutinaEjercicioRepository.saveAll(asociaciones));
+
+        return toDetalleDto(rutina);
+    }
+
+    /**
+     * Construye las asociaciones de una rutina a partir de la lista original del
+     * request. El mismo ejercicio puede repetirse con configuraciones distintas y
+     * el resultado queda ordenado por {@code orden}.
+     */
+    private List<RutinaEjercicio> construirAsociaciones(
+            Rutina rutina,
+            List<RutinaEjercicioCrearDto> configuraciones,
+            Map<Long, Ejercicio> ejerciciosPorId) {
+        return configuraciones
                 .stream()
                 .sorted(Comparator.comparing(RutinaEjercicioCrearDto::orden))
                 .map(configuracion -> new RutinaEjercicio(
@@ -105,11 +171,6 @@ public class RutinaService {
                         configuracion.pesoObjetivo(),
                         configuracion.orden()))
                 .toList();
-
-        rutina.setRutinaEjercicios(
-                rutinaEjercicioRepository.saveAll(asociaciones));
-
-        return toDetalleDto(rutina);
     }
 
     private Map<Long, Ejercicio> buscarEjercicios(
