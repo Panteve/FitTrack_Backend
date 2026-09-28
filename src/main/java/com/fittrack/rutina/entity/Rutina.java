@@ -45,7 +45,11 @@ public class Rutina {
     @Column(name = "dia_semana", nullable = false)
     private DiaSemana diaSemana;
 
-    @Column(name = "status", nullable = false)
+    // El default en la definicion permite que ddl-auto=update agregue la columna
+    // en bases ya pobladas: un "add column ... not null" sin default seria
+    // rechazado por PostgreSQL sobre filas existentes.
+    @Column(name = "status", nullable = false,
+            columnDefinition = "boolean not null default true")
     private Boolean status = true;
 
     @OneToMany(mappedBy = "rutina")
@@ -61,5 +65,6 @@ public class Rutina {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.diaSemana = diaSemana;
+        this.status = true; // Toda rutina nace activa; el borrado logico la desactiva.
     }
 }

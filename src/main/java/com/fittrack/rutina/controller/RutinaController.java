@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,22 @@ public class RutinaController {
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         return ResponseEntity.ok(
                 rutinaService.actualizarRutina(id, request, usuario.id()));
+    }
+
+    /**
+     * Desactiva logicamente una rutina del usuario autenticado. La rutina y sus
+     * asociaciones se conservan en la base de datos.
+     *
+     * @param id identificador de la rutina
+     * @param usuario identidad obtenida del JWT
+     * @return respuesta sin contenido
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarRutina(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        rutinaService.eliminarRutina(id, usuario.id());
+        return ResponseEntity.noContent().build();
     }
 
 }

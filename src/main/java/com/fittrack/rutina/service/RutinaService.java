@@ -47,7 +47,7 @@ public class RutinaService {
 
     @Transactional(readOnly = true)
     public List<RutinaDto> obtenerRutinasPorUsuario(Long usuarioId) {
-        return rutinaRepository.findDistinctByUsuario_Id(usuarioId)
+        return rutinaRepository.findDistinctByUsuario_IdAndStatusTrue(usuarioId)
                 .stream()
                 .map(rutina -> new RutinaDto(
                         rutina.getId(),
@@ -66,7 +66,7 @@ public class RutinaService {
     @Transactional(readOnly = true)
     public RutinaDetalleDto obtenerRutinaPorId(Long rutinaId, Long usuarioId) {
         return rutinaRepository
-                .findDistinctByIdAndUsuario_Id(rutinaId, usuarioId)
+                .findDistinctByIdAndUsuario_IdAndStatusTrue(rutinaId, usuarioId)
                 .map(this::toDetalleDto)
                 .orElseThrow(() -> new ApiException(
                         HttpStatus.NOT_FOUND,
@@ -149,6 +149,32 @@ public class RutinaService {
                 rutinaEjercicioRepository.saveAll(asociaciones));
 
         return toDetalleDto(rutina);
+    }
+
+    /**
+     * Desactiva logicamente una rutina del usuario autenticado. No se borra la fila
+     * de {@code rutina} ni sus filas de {@code rutina_ejercicio}: solo se marca
+     * {@code status} en {@code false} y el cambio se persiste por dirty checking.
+     * Si la rutina ya estaba inactiva no se modifica nada, de modo que la operacion
+     * es idempotente y un segundo DELETE tambien responde sin error.
+     *
+     * @param rutinaId identificador de la rutina a desactivar
+     * @param usuarioId identificador del usuario autenticado
+     * @throws ApiException si la rutina no existe o pertenece a otro usuario
+     */
+    @Transactional
+    public void eliminarRutina(Long rutinaId, Long usuarioId) {
+        Rutina rutina = rutinaRepository
+                .findByIdAndUsuario_Id(rutinaId, usuarioId)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.NOT_FOUND,
+                        "Rutina no encontrada."));
+
+        if (Boolean.FALSE.equals(rutina.getStatus())) {
+            return;
+        }
+
+        rutina.setStatus(false);
     }
 
     /**

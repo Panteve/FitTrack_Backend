@@ -46,7 +46,19 @@
 | `descripcion` | `varchar` |  Nullable |
 | `dia_semana` | `varchar` |  |
 | `nombre` | `varchar` |  |
+| `status` | `bool` |  Not Null Default: `true` |
 | `id_usuario` | `int8` |  |
+
+> `rutina.status` habilita el borrado logico: `DELETE /rutinas/{id}` lo pasa a
+> `false` sin eliminar la fila ni sus registros de `rutina_ejercicio`. Si tu base
+> de datos fue creada antes de esta columna, agregala con:
+>
+> ```sql
+> ALTER TABLE rutina
+> ADD COLUMN IF NOT EXISTS status BOOLEAN NOT NULL DEFAULT TRUE;
+> ```
+>
+> Con `spring.jpa.hibernate.ddl-auto=update` Hibernate tambien la crea al arrancar.
 
 ## Table `rutina_ejercicio`
 
