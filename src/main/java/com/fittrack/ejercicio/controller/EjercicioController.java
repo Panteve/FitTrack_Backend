@@ -6,8 +6,6 @@ import com.fittrack.ejercicio.service.EjercicioService;
 import com.fittrack.security.UsuarioAutenticado;
 
 import jakarta.validation.Valid;
-
-import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
