@@ -3,6 +3,7 @@ package com.fittrack.rutina.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,6 +23,9 @@ import com.fittrack.usuario.entity.Usuario;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Representa una rutina perteneciente a un usuario.
+ */
 @Entity
 @Table(name = "rutina")
 @Getter
@@ -52,19 +56,51 @@ public class Rutina {
             columnDefinition = "boolean not null default true")
     private Boolean status = true;
 
-    @OneToMany(mappedBy = "rutina")
+    @OneToMany(
+            mappedBy = "rutina",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @OrderBy("orden ASC")
     private List<RutinaEjercicio> rutinaEjercicios = new ArrayList<>();
 
-    // Constructor
+    /** Constructor requerido por JPA. */
     public Rutina() {
     }
 
+    /**
+     * Crea una rutina activa.
+     *
+     * @param usuario propietario de la rutina
+     * @param nombre nombre de la rutina
+     * @param descripcion descripción opcional
+     * @param diaSemana día asignado
+     */
     public Rutina(Usuario usuario, String nombre, String descripcion, DiaSemana diaSemana) {
         this.usuario = usuario;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.diaSemana = diaSemana;
         this.status = true; // Toda rutina nace activa; el borrado logico la desactiva.
+    }
+
+    /**
+     * Agrega un ejercicio y mantiene ambos lados de la relación.
+     *
+     * @param rutinaEjercicio ejercicio configurado para la rutina
+     */
+    public void agregarRutinaEjercicio(RutinaEjercicio rutinaEjercicio) {
+        rutinaEjercicio.setRutina(this);
+        rutinaEjercicios.add(rutinaEjercicio);
+    }
+
+    /**
+     * Reemplaza todos los ejercicios configurados de la rutina.
+     *
+     * @param nuevosEjercicios nueva configuración de ejercicios
+     */
+    public void reemplazarRutinaEjercicios(
+            List<RutinaEjercicio> nuevosEjercicios) {
+        rutinaEjercicios.clear();
+        nuevosEjercicios.forEach(this::agregarRutinaEjercicio);
     }
 }

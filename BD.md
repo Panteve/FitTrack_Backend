@@ -68,11 +68,28 @@
 |------|------|-------------|
 | `id` | `int8` | Primary |
 | `orden` | `int4` |  Nullable |
-| `peso_objetivo` | `numeric` |  |
-| `repeticiones_objetivo` | `int4` |  |
-| `series_objetivo` | `int4` |  |
 | `id_ejercicio` | `int8` |  |
 | `id_rutina` | `int8` |  |
+
+`rutina_ejercicio` representa la aparición de un ejercicio dentro de una rutina.
+La configuración de cada serie planificada se almacena por separado en
+`rutina_serie`.
+
+## Table `rutina_serie`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int8` | Primary |
+| `numero_serie` | `int4` |  |
+| `repeticiones_objetivo` | `int4` |  |
+| `peso_objetivo` | `numeric` |  |
+| `id_rutina_ejercicio` | `int8` |  |
+
+`rutina_serie` contiene una fila por cada serie planificada. Es diferente de
+`registro_serie`: la primera representa el objetivo de la rutina y la segunda
+registra lo que el usuario realizó durante un entrenamiento.
 
 ## Table `usuario`
 

@@ -1,8 +1,10 @@
 package com.fittrack.rutina.service;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,9 +20,10 @@ import com.fittrack.rutina.dto.RutinaDetalleDto;
 import com.fittrack.rutina.dto.RutinaDto;
 import com.fittrack.rutina.dto.RutinaEjercicioCrearDto;
 import com.fittrack.rutina.dto.RutinaEjercicioDetalleDto;
+import com.fittrack.rutina.dto.RutinaSerieDetalleDto;
 import com.fittrack.rutina.entity.Rutina;
 import com.fittrack.rutina.entity.RutinaEjercicio;
-import com.fittrack.rutina.repository.RutinaEjercicioRepository;
+import com.fittrack.rutina.entity.RutinaSerie;
 import com.fittrack.rutina.repository.RutinaRepository;
 import com.fittrack.shared.exception.ApiException;
 import com.fittrack.usuario.entity.Usuario;
@@ -30,17 +33,14 @@ import com.fittrack.usuario.repository.UsuarioRepository;
 public class RutinaService {
 
     private final RutinaRepository rutinaRepository;
-    private final RutinaEjercicioRepository rutinaEjercicioRepository;
     private final EjercicioRepository ejercicioRepository;
     private final UsuarioRepository usuarioRepository;
 
     public RutinaService(
             RutinaRepository rutinaRepository,
-            RutinaEjercicioRepository rutinaEjercicioRepository,
             EjercicioRepository ejercicioRepository,
             UsuarioRepository usuarioRepository) {
         this.rutinaRepository = rutinaRepository;
-        this.rutinaEjercicioRepository = rutinaEjercicioRepository;
         this.ejercicioRepository = ejercicioRepository;
         this.usuarioRepository = usuarioRepository;
     }
@@ -89,21 +89,20 @@ public class RutinaService {
                 request.ejercicios());
 
         Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
-        Rutina rutina = rutinaRepository.save(new Rutina(
+        Rutina rutina = new Rutina(
                 usuario,
                 request.nombre().trim(),
                 normalizarDescripcion(request.descripcion()),
-                request.diaSemana()));
+                request.diaSemana());
 
         List<RutinaEjercicio> asociaciones = construirAsociaciones(
-                rutina,
                 request.ejercicios(),
                 ejerciciosPorId);
+        rutina.reemplazarRutinaEjercicios(asociaciones);
 
-        rutina.setRutinaEjercicios(
-                rutinaEjercicioRepository.saveAll(asociaciones));
+        Rutina rutinaGuardada = rutinaRepository.saveAndFlush(rutina);
 
-        return toDetalleDto(rutina);
+        return toDetalleDto(rutinaGuardada);
     }
 
     /**
@@ -138,15 +137,12 @@ public class RutinaService {
         rutina.setDescripcion(normalizarDescripcion(request.descripcion()));
         rutina.setDiaSemana(request.diaSemana());
 
-        rutinaEjercicioRepository.deleteAllByRutinaId(rutinaId);
-
         List<RutinaEjercicio> asociaciones = construirAsociaciones(
-                rutina,
                 request.ejercicios(),
                 ejerciciosPorId);
+        rutina.reemplazarRutinaEjercicios(asociaciones);
 
-        rutina.setRutinaEjercicios(
-                rutinaEjercicioRepository.saveAll(asociaciones));
+        rutinaRepository.flush();
 
         return toDetalleDto(rutina);
     }
@@ -179,24 +175,60 @@ public class RutinaService {
 
     /**
      * Construye las asociaciones de una rutina a partir de la lista original del
-     * request. El mismo ejercicio puede repetirse con configuraciones distintas y
-     * el resultado queda ordenado por {@code orden}.
+     * request. El mismo ejercicio puede repetirse en bloques distintos y el
+     * resultado queda ordenado por {@code orden}.
      */
     private List<RutinaEjercicio> construirAsociaciones(
-            Rutina rutina,
             List<RutinaEjercicioCrearDto> configuraciones,
             Map<Long, Ejercicio> ejerciciosPorId) {
         return configuraciones
                 .stream()
                 .sorted(Comparator.comparing(RutinaEjercicioCrearDto::orden))
-                .map(configuracion -> new RutinaEjercicio(
-                        rutina,
-                        ejerciciosPorId.get(configuracion.ejercicioId()),
-                        configuracion.seriesObjetivo(),
-                        configuracion.repeticionesObjetivo(),
-                        configuracion.pesoObjetivo(),
-                        configuracion.orden()))
+                .map(configuracion -> construirRutinaEjercicio(
+                        configuracion,
+                        ejerciciosPorId.get(configuracion.ejercicioId())))
                 .toList();
+    }
+
+    private RutinaEjercicio construirRutinaEjercicio(
+            RutinaEjercicioCrearDto configuracion,
+            Ejercicio ejercicio) {
+        validarNumerosSerie(configuracion);
+
+        RutinaEjercicio rutinaEjercicio = new RutinaEjercicio(
+                ejercicio,
+                configuracion.orden());
+
+        configuracion.series()
+                .stream()
+                .sorted(Comparator.comparing(serie -> serie.numeroSerie()))
+                .map(serie -> new RutinaSerie(
+                        serie.numeroSerie(),
+                        serie.repeticionesObjetivo(),
+                        serie.pesoObjetivo()))
+                .forEach(rutinaEjercicio::agregarSerie);
+
+        return rutinaEjercicio;
+    }
+
+    private void validarNumerosSerie(
+            RutinaEjercicioCrearDto configuracion) {
+        Set<Integer> numerosEncontrados = new HashSet<>();
+        List<Integer> numerosRepetidos = configuracion.series()
+                .stream()
+                .map(serie -> serie.numeroSerie())
+                .filter(numero -> !numerosEncontrados.add(numero))
+                .distinct()
+                .toList();
+
+        if (!numerosRepetidos.isEmpty()) {
+            throw new ApiException(
+                    HttpStatus.BAD_REQUEST,
+                    "El ejercicio con ID " + configuracion.ejercicioId()
+                            + " en el orden " + configuracion.orden()
+                            + " contiene números de serie repetidos: "
+                            + numerosRepetidos);
+        }
     }
 
     private Map<Long, Ejercicio> buscarEjercicios(
@@ -243,10 +275,17 @@ public class RutinaService {
                         rutinaEjercicio.getId(),
                         rutinaEjercicio.getEjercicio().getId(),
                         rutinaEjercicio.getEjercicio().getNombre(),
-                        rutinaEjercicio.getSeriesObjetivo(),
-                        rutinaEjercicio.getRepeticionesObjetivo(),
-                        rutinaEjercicio.getPesoObjetivo(),
-                        rutinaEjercicio.getOrden()))
+                        rutinaEjercicio.getOrden(),
+                        rutinaEjercicio.getSeries()
+                                .stream()
+                                .sorted(Comparator.comparing(
+                                        RutinaSerie::getNumeroSerie))
+                                .map(serie -> new RutinaSerieDetalleDto(
+                                        serie.getId(),
+                                        serie.getNumeroSerie(),
+                                        serie.getRepeticionesObjetivo(),
+                                        serie.getPesoObjetivo()))
+                                .toList()))
                 .toList();
 
         return new RutinaDetalleDto(
