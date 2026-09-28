@@ -64,6 +64,7 @@ public class AuthService {
 
 		 return AuthResponseDto.builder()
 		        .token(jwtService.getToken(usuario)) //se obtiene un token JWT para el usuario recién registrado utilizando el servicio jwtService 
+				.nombre(usuario.getNombre())
 				.build();
 	}
 }
