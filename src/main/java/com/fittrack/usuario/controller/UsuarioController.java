@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fittrack.security.UsuarioAutenticado;
+import com.fittrack.usuario.dto.CambiarNombreRequest;
 import com.fittrack.usuario.dto.CambiarPasswordRequest;
 import com.fittrack.usuario.service.UsuarioService;
 
@@ -56,10 +57,10 @@ public class UsuarioController {
     })
     @PutMapping("/me/nombre")
     public ResponseEntity<Void> cambiarNombre(
-            @RequestBody String nuevoNombre,
+            @RequestBody CambiarNombreRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
 
-        usuarioService.cambiarNombre(usuario, nuevoNombre);
+        usuarioService.cambiarNombre(usuario, request.getNuevoNombre());
 
         return ResponseEntity.noContent().build();
     }
