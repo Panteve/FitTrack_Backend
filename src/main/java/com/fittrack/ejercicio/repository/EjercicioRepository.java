@@ -11,5 +11,10 @@ public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {
 
 
     List<Ejercicio> findAllByUsuario_IdAndStatusTrue(Long usuarioId);
+
+    List<Ejercicio> findAllByUsuarioIsNullAndStatusTrueOrderByNombreAsc();
+
+    List<Ejercicio> findAllByUsuario_IdAndStatusTrueOrderByNombreAsc(Long usuarioId);
+
     Optional<Ejercicio> findByIdAndUsuario_Id(Long ejercicioId, Long usuarioId);
 }

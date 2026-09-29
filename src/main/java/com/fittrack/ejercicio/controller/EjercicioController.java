@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fittrack.ejercicio.dto.EjercicioRequest;
 import com.fittrack.ejercicio.dto.EjercicioResponse;
+import com.fittrack.ejercicio.dto.EjerciciosDisponiblesResponse;
 import com.fittrack.ejercicio.service.EjercicioService;
 import com.fittrack.security.UsuarioAutenticado;
 
@@ -43,6 +44,23 @@ public class EjercicioController {
     public ResponseEntity<List<EjercicioResponse>> obtenerMisEjercicios(
             @AuthenticationPrincipal UsuarioAutenticado usuario) { //usuario autenticado obtenido del JWT
         return ResponseEntity.ok(ejercicioService.listarTodos(usuario.id()));
+    }
+
+    /**
+     * Lista los ejercicios del sistema y del usuario en grupos separados.
+     *
+     * @param usuario identidad obtenida del JWT
+     * @return ejercicios disponibles para seleccionar
+     */
+    @GetMapping("/disponibles")
+    @Operation(
+            summary = "Listar ejercicios disponibles",
+            description = "Obtiene por separado los ejercicios del sistema y los creados por el usuario autenticado.")
+    @ApiResponse(responseCode = "200", description = "Ejercicios disponibles obtenidos")
+    public ResponseEntity<EjerciciosDisponiblesResponse> obtenerDisponibles(
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return ResponseEntity.ok(
+                ejercicioService.listarDisponibles(usuario.id()));
     }
 
     @Operation(summary = "Obtener un ejercicio por ID", description = "Obtiene un ejercicio específico perteneciente al usuario autenticado.") 

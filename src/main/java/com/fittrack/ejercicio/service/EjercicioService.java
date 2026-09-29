@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fittrack.ejercicio.dto.EjercicioRequest;
 import com.fittrack.ejercicio.dto.EjercicioResponse;
+import com.fittrack.ejercicio.dto.EjerciciosDisponiblesResponse;
 import com.fittrack.ejercicio.entity.Ejercicio;
 import com.fittrack.ejercicio.repository.EjercicioRepository;
 import com.fittrack.shared.exception.ApiException;
@@ -40,6 +41,30 @@ public class EjercicioService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    /**
+     * Lista por separado los ejercicios del sistema y los del usuario.
+     *
+     * @param usuarioId identificador del usuario autenticado
+     * @return ejercicios que puede seleccionar el usuario
+     */
+    @Transactional(readOnly = true)
+    public EjerciciosDisponiblesResponse listarDisponibles(Long usuarioId) {
+        List<EjercicioResponse> ejerciciosSistema = ejercicioRepository
+                .findAllByUsuarioIsNullAndStatusTrueOrderByNombreAsc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        List<EjercicioResponse> misEjercicios = ejercicioRepository
+                .findAllByUsuario_IdAndStatusTrueOrderByNombreAsc(usuarioId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+
+        return new EjerciciosDisponiblesResponse(
+                ejerciciosSistema,
+                misEjercicios);
     }
 
     /**
