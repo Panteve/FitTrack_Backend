@@ -10,5 +10,5 @@ import com.fittrack.usuario.entity.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	Optional<Usuario> findByCorreo(String correo);
 	boolean existsByCorreo(String correo);
-	Optional<Usuario> findByCorreoAndStatusTrue(String correo, Boolean status);
+	Optional<Usuario> findByCorreoAndStatus(String correo, Boolean status);
 }
