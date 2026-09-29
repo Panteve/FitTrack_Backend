@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/usuarios")
-@Tag(name = "PasswordController", description = "Controlador para cambiar la contraseña del usuario autenticado")
+@Tag(name = "UsuarioController", description = "Controlador para la gestión de usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
