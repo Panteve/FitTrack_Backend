@@ -42,7 +42,7 @@ public class AuthService {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						request.getCorreo(), request.getContrasena()));
-		Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo()).orElseThrow();
+		Usuario usuario = usuarioRepository.findByCorreo_andStatusTrue(request.getCorreo(), true).orElseThrow();
 		String fotoPerfilUrl = fotoStorageService.obtenerUrlFotoPerfil(usuario.getId());
 		return AuthResponseDto.builder()
 				.token(jwtService.getToken(usuario))
