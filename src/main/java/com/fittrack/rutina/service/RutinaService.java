@@ -275,6 +275,7 @@ public class RutinaService {
                         rutinaEjercicio.getId(),
                         rutinaEjercicio.getEjercicio().getId(),
                         rutinaEjercicio.getEjercicio().getNombre(),
+                        rutinaEjercicio.getEjercicio().getGrupoMuscular(),
                         rutinaEjercicio.getOrden(),
                         rutinaEjercicio.getSeries()
                                 .stream()
