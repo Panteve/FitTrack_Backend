@@ -33,7 +33,9 @@ public class AuthController {
 	@ApiResponses({ 
 		@ApiResponse( responseCode = "200", description = "Inicio de sesión exitoso"), 
 		@ApiResponse( responseCode = "400", description = "Datos de inicio de sesión inválidos"), 
-		@ApiResponse( responseCode = "401", description = "Credenciales incorrectas") })
+		@ApiResponse( responseCode = "401", description = "Credenciales incorrectas"),
+		@ApiResponse ( responseCode = "500", description = "Error interno del servidor")
+	 })
 	@PostMapping(value = "/login")
 	public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
 		return ResponseEntity.ok(authService.login(request));
