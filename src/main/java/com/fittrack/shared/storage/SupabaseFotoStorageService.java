@@ -1,10 +1,11 @@
-package com.fittrack.entrenamiento.storage;
+package com.fittrack.shared.storage;
 
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class SupabaseFotoStorageService implements FotoStorageService {
+
+    private static final String RUTA_FOTO_PERFIL = "usuarios/%d/foto-perfil";
 
     private final SupabaseStorageProperties properties;
     private final RestClient restClient;
@@ -63,34 +66,7 @@ public class SupabaseFotoStorageService implements FotoStorageService {
     public String generarUrlFirmada(String ruta) {
         validarConfiguracion();
         try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> respuesta = restClient.post()
-                    .uri(urlFirma(ruta))
-                    .headers(this::agregarAutorizacion)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("expiresIn", properties.signedUrlSeconds()))
-                    .retrieve()
-                    .body(Map.class);
-
-            Object urlFirmada = respuesta == null
-                    ? null
-                    : respuesta.getOrDefault(
-                            "signedURL",
-                            respuesta.get("signedUrl"));
-            if (!(urlFirmada instanceof String valor)
-                    || valor.isBlank()) {
-                throw errorStorage();
-            }
-            if (valor.startsWith("http://") || valor.startsWith("https://")) {
-                return valor;
-            }
-            if (valor.startsWith("/storage/v1/")) {
-                return normalizarUrlBase() + valor;
-            }
-            if (valor.startsWith("/object/")) {
-                return normalizarUrlBase() + "/storage/v1" + valor;
-            }
-            return normalizarUrlBase() + "/storage/v1/" + valor;
+            return solicitarUrlFirmada(properties.bucket(), ruta);
         } catch (RestClientResponseException ex) {
             log.error("Supabase rechazó la firma de la fotografía. status={}",
                     ex.getStatusCode().value());
@@ -98,6 +74,32 @@ public class SupabaseFotoStorageService implements FotoStorageService {
         } catch (RestClientException ex) {
             log.error("No fue posible firmar la URL de Supabase Storage", ex);
             throw errorStorage();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String obtenerUrlFotoPerfil(Long usuarioId) {
+        if (usuarioId == null || !properties.estaConfiguradoPerfil()) {
+            return null;
+        }
+
+        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
+        try {
+            return solicitarUrlFirmada(properties.profileBucket(), ruta);
+        } catch (RestClientResponseException ex) {
+            int codigoRespuesta = ex.getStatusCode().value();
+            boolean fotoInexistente = codigoRespuesta == HttpStatus.BAD_REQUEST.value()
+                    || codigoRespuesta == HttpStatus.NOT_FOUND.value();
+            if (!fotoInexistente) {
+                log.warn("No fue posible consultar la foto de perfil. usuarioId={}, status={}",
+                        usuarioId, codigoRespuesta);
+            }
+            return null;
+        } catch (RestClientException ex) {
+            log.warn("No fue posible conectar con Supabase para consultar la foto de perfil. "
+                    + "usuarioId={}", usuarioId);
+            return null;
         }
     }
 
@@ -138,18 +140,22 @@ public class SupabaseFotoStorageService implements FotoStorageService {
     }
 
     private String urlObjeto(String ruta) {
-        return UriComponentsBuilder.fromUriString(urlColeccion())
+        return urlObjeto(properties.bucket(), ruta);
+    }
+
+    private String urlObjeto(String bucket, String ruta) {
+        return UriComponentsBuilder.fromUriString(urlColeccion(bucket))
                 .pathSegment(ruta.split("/"))
                 .build()
                 .encode()
                 .toUriString();
     }
 
-    private String urlFirma(String ruta) {
+    private String urlFirma(String bucket, String ruta) {
         return UriComponentsBuilder
                 .fromUriString(normalizarUrlBase())
                 .pathSegment("storage", "v1", "object", "sign",
-                        properties.bucket())
+                        bucket)
                 .pathSegment(ruta.split("/"))
                 .build()
                 .encode()
@@ -157,12 +163,46 @@ public class SupabaseFotoStorageService implements FotoStorageService {
     }
 
     private String urlColeccion() {
+        return urlColeccion(properties.bucket());
+    }
+
+    private String urlColeccion(String bucket) {
         return UriComponentsBuilder
                 .fromUriString(normalizarUrlBase())
-                .pathSegment("storage", "v1", "object", properties.bucket())
+                .pathSegment("storage", "v1", "object", bucket)
                 .build()
                 .encode()
                 .toUriString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private String solicitarUrlFirmada(String bucket, String ruta) {
+        Map<String, Object> respuesta = restClient.post()
+                .uri(urlFirma(bucket, ruta))
+                .headers(this::agregarAutorizacion)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("expiresIn", properties.signedUrlSeconds()))
+                .retrieve()
+                .body(Map.class);
+
+        Object urlFirmada = respuesta == null
+                ? null
+                : respuesta.getOrDefault(
+                        "signedURL",
+                        respuesta.get("signedUrl"));
+        if (!(urlFirmada instanceof String valor) || valor.isBlank()) {
+            throw errorStorage();
+        }
+        if (valor.startsWith("http://") || valor.startsWith("https://")) {
+            return valor;
+        }
+        if (valor.startsWith("/storage/v1/")) {
+            return normalizarUrlBase() + valor;
+        }
+        if (valor.startsWith("/object/")) {
+            return normalizarUrlBase() + "/storage/v1" + valor;
+        }
+        return normalizarUrlBase() + "/storage/v1/" + valor;
     }
 
     private String normalizarUrlBase() {

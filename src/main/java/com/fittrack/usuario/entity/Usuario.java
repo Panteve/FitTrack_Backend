@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** Representa una cuenta autenticable de FitTrack. */
 @Data
 @Builder
 @NoArgsConstructor

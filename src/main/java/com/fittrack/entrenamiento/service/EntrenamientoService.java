@@ -25,11 +25,11 @@ import com.fittrack.entrenamiento.dto.RegistroSerieRequest;
 import com.fittrack.entrenamiento.entity.Entrenamiento;
 import com.fittrack.entrenamiento.entity.RegistroSerie;
 import com.fittrack.entrenamiento.repository.EntrenamientoRepository;
-import com.fittrack.entrenamiento.storage.FotoStorageService;
 import com.fittrack.rutina.entity.Rutina;
 import com.fittrack.rutina.entity.RutinaEjercicio;
 import com.fittrack.rutina.repository.RutinaRepository;
 import com.fittrack.shared.exception.ApiException;
+import com.fittrack.shared.storage.FotoStorageService;
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
 

@@ -1,4 +1,4 @@
-package com.fittrack.entrenamiento.storage;
+package com.fittrack.shared.storage;
 
 /** Administra las fotografías de entrenamientos en almacenamiento externo. */
 public interface FotoStorageService {
@@ -19,6 +19,14 @@ public interface FotoStorageService {
      * @return URL firmada temporal
      */
     String generarUrlFirmada(String ruta);
+
+    /**
+     * Busca la foto de perfil de un usuario y genera una URL temporal si existe.
+     *
+     * @param usuarioId identificador del usuario autenticado
+     * @return URL firmada o {@code null} cuando el usuario no tiene foto
+     */
+    String obtenerUrlFotoPerfil(Long usuarioId);
 
     /**
      * Intenta eliminar una fotografía que ya no se utiliza.
