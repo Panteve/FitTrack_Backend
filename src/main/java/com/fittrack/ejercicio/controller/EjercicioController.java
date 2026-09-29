@@ -19,10 +19,12 @@ import com.fittrack.ejercicio.dto.EjercicioResponse;
 import com.fittrack.ejercicio.service.EjercicioService;
 import com.fittrack.security.UsuarioAutenticado;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/ejercicios")
+@Tag(name = "Ejercicios", description = "CRUD de ejercicios")
 public class EjercicioController {
 
     private final EjercicioService ejercicioService;
