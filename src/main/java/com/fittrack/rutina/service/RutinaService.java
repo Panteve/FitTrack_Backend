@@ -47,7 +47,8 @@ public class RutinaService {
 
     @Transactional(readOnly = true)
     public List<RutinaDto> obtenerRutinasPorUsuario(Long usuarioId) {
-        return rutinaRepository.findDistinctByUsuario_IdAndStatusTrue(usuarioId)
+        return rutinaRepository
+                .findDistinctByUsuario_IdAndStatusTrueOrderByIdDesc(usuarioId)
                 .stream()
                 .map(rutina -> new RutinaDto(
                         rutina.getId(),
@@ -79,19 +80,22 @@ public class RutinaService {
      * @param request   datos de la rutina y sus ejercicios
      * @param usuarioId identificador del usuario autenticado
      * @return rutina creada con el detalle de sus ejercicios
-     * @throws ApiException si alguno de los ejercicios no existe
+     * @throws ApiException si el nombre ya está ocupado o alguno de los ejercicios no existe
      */
     @Transactional
     public RutinaDetalleDto crearRutina(
             RutinaCrearDto request,
             Long usuarioId) {
+        String nombreNormalizado = request.nombre().trim();
+        validarNombreDisponibleParaCrear(usuarioId, nombreNormalizado);
+
         Map<Long, Ejercicio> ejerciciosPorId = buscarEjercicios(
                 request.ejercicios());
 
         Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
         Rutina rutina = new Rutina(
                 usuario,
-                request.nombre().trim(),
+                nombreNormalizado,
                 normalizarDescripcion(request.descripcion()),
                 request.diaSemana());
 
@@ -114,8 +118,8 @@ public class RutinaService {
      * @param request datos nuevos de la rutina y sus ejercicios
      * @param usuarioId identificador del usuario autenticado
      * @return rutina actualizada con el detalle de sus ejercicios
-     * @throws ApiException si la rutina no existe, esta inactiva, pertenece a
-     *         otro usuario o alguno de los ejercicios no existe
+     * @throws ApiException si el nombre ya está ocupado, la rutina no existe,
+     *         está inactiva, pertenece a otro usuario o alguno de los ejercicios no existe
      */
     @Transactional
     public RutinaDetalleDto actualizarRutina(
@@ -133,7 +137,13 @@ public class RutinaService {
                         HttpStatus.NOT_FOUND,
                         "Rutina no encontrada."));
 
-        rutina.setNombre(request.nombre().trim());
+        String nombreNormalizado = request.nombre().trim();
+        validarNombreDisponibleParaActualizar(
+                usuarioId,
+                nombreNormalizado,
+                rutinaId);
+
+        rutina.setNombre(nombreNormalizado);
         rutina.setDescripcion(normalizarDescripcion(request.descripcion()));
         rutina.setDiaSemana(request.diaSemana());
 
@@ -145,6 +155,38 @@ public class RutinaService {
         rutinaRepository.flush();
 
         return toDetalleDto(rutina);
+    }
+
+    private void validarNombreDisponibleParaCrear(
+            Long usuarioId,
+            String nombre) {
+        boolean nombreOcupado = rutinaRepository
+                .existsByUsuario_IdAndNombreIgnoreCaseAndStatusTrue(
+                        usuarioId,
+                        nombre);
+
+        if (nombreOcupado) {
+            throw new ApiException(
+                    HttpStatus.CONFLICT,
+                    "Ya existe una rutina activa con ese nombre.");
+        }
+    }
+
+    private void validarNombreDisponibleParaActualizar(
+            Long usuarioId,
+            String nombre,
+            Long rutinaId) {
+        boolean nombreOcupado = rutinaRepository
+                .existsByUsuario_IdAndNombreIgnoreCaseAndStatusTrueAndIdNot(
+                        usuarioId,
+                        nombre,
+                        rutinaId);
+
+        if (nombreOcupado) {
+            throw new ApiException(
+                    HttpStatus.CONFLICT,
+                    "Ya existe una rutina activa con ese nombre.");
+        }
     }
 
     /**

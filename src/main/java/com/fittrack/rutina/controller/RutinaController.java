@@ -38,7 +38,9 @@ public class RutinaController {
         this.rutinaService = rutinaService;
     }
 
-    @Operation(summary = "Listar mis rutinas", description = "Obtiene todas las rutinas del usuario autenticado.") 
+    @Operation(
+            summary = "Listar mis rutinas",
+            description = "Obtiene las rutinas del usuario autenticado, de la más reciente a la más antigua.")
     @ApiResponse(responseCode = "200", description = "Listado de rutinas obtenido correctamente")
     @GetMapping
     public ResponseEntity<List<RutinaDto>> obtenerMisRutinas(
@@ -65,7 +67,8 @@ public class RutinaController {
     @Operation(summary = "Crear una rutina", description = "Crea una nueva rutina para el usuario autenticado.") 
     @ApiResponses({ 
         @ApiResponse(responseCode = "201", description = "Rutina creada correctamente"), 
-        @ApiResponse(responseCode = "400", description = "Datos inválidos") })
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "409", description = "Ya existe una rutina con el mismo nombre") })
 
     @PostMapping
     public ResponseEntity<RutinaDetalleDto> crearRutina(
@@ -85,7 +88,8 @@ public class RutinaController {
     @ApiResponses({ 
         @ApiResponse(responseCode = "200", description = "Rutina actualizada correctamente"), 
         @ApiResponse(responseCode = "400", description = "Datos inválidos"), 
-        @ApiResponse(responseCode = "404", description = "Rutina no encontrada") })
+        @ApiResponse(responseCode = "404", description = "Rutina no encontrada"),
+        @ApiResponse(responseCode = "409", description = "Ya existe una rutina con el mismo nombre") })
 
     @PutMapping("/{id}")//endpoint para actualizar una rutina existente
     public ResponseEntity<RutinaDetalleDto> actualizarRutina(
