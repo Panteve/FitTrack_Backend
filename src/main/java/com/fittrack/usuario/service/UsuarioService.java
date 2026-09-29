@@ -6,13 +6,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fittrack.security.UsuarioAutenticado;
-<<<<<<< Updated upstream
 import com.fittrack.shared.exception.ApiException;
-=======
 import com.fittrack.usuario.dto.UsuarioResponse;
->>>>>>> Stashed changes
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
+
+
+
 
 @Service 
 public class UsuarioService {
