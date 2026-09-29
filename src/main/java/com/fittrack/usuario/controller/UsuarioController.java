@@ -12,6 +12,7 @@ import com.fittrack.usuario.dto.CambiarNombreRequest;
 import com.fittrack.usuario.dto.CambiarPasswordRequest;
 import com.fittrack.usuario.service.UsuarioService;
 
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -29,15 +30,16 @@ public class UsuarioController {
     }
 
 
-    @Operation( summary = "Cambiar contraseña", description = "Permite al usuario autenticado cambiar su contraseña actual por una nueva.") 
+    @Operation( summary = "Cambiar contraseña", description = "Permite al usuario autenticado cambiar su contraseña actual por una nueva. La nueva debe tener entre 8 y 72 caracteres.") 
     @ApiResponses({ 
-        @ApiResponse( responseCode = "204", description = "Contraseña cambiada correctamente"), 
-        @ApiResponse( responseCode = "400", description = "Datos inválidos"), 
-        @ApiResponse( responseCode = "401", description = "Contraseña actual incorrecta") })
+        @ApiResponse( responseCode = "204", description = "Contraseña actualizada correctamente"), 
+        @ApiResponse( responseCode = "400", description = "Campos vacíos o contraseña nueva fuera del rango permitido de 8 a 72 caracteres"), 
+        @ApiResponse( responseCode = "401", description = "La contraseña actual es incorrecta"),
+        @ApiResponse( responseCode = "404", description = "El usuario autenticado no existe") })
 
     @PutMapping("/me/password")
     public ResponseEntity<Void> cambiarPassword(
-            @RequestBody CambiarPasswordRequest request,// RequestBody para recibir los datos de la solicitud
+            @Valid @RequestBody CambiarPasswordRequest request,// @Valid evalúa las anotaciones del DTO antes de entrar al servicio
             @AuthenticationPrincipal UsuarioAutenticado usuario) {// UsuarioAutenticado obtenido del contexto de seguridad
 
         usuarioService.cambiarPassword(// Llamada al servicio para cambiar la contraseña

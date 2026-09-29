@@ -1,10 +1,12 @@
 package com.fittrack.usuario.service;
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fittrack.security.UsuarioAutenticado;
+import com.fittrack.shared.exception.ApiException;
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
 
@@ -22,25 +24,43 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void cambiarPassword(UsuarioAutenticado usuarioAutenticado,String passwordActual,String passwordNueva) {
+    /**
+     * Cambia la contraseña del usuario después de verificar la contraseña actual.
+     *
+     * <p>Las contraseñas nunca se registran en logs ni se incluyen en los mensajes
+     * de error para no filtrarlas.</p>
+     *
+     * @param usuarioAutenticado usuario obtenido del token
+     * @param passwordActual contraseña actual sin modificar
+     * @param passwordNueva contraseña nueva validada
+     * @throws ApiException si el usuario no existe o la contraseña actual es incorrecta
+     */
+    public void cambiarPassword(
+            UsuarioAutenticado usuarioAutenticado,
+            String passwordActual,
+            String passwordNueva) {
 
         Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
-                .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));// Buscar el usuario en la base de datos por su ID
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuario no encontrado"
+                ));
 
-        if (!passwordEncoder.matches(
+        boolean passwordActualCorrecto = passwordEncoder.matches(
                 passwordActual,
-                usuario.getPassword())) {// Verificar si la contraseña actual proporcionada coincide con la almacenada en la base de datos
-
-            throw new RuntimeException(
-                    "La contraseña actual es incorrecta");
-        }
-
-        usuario.setContrasena(// Actualizar la contraseña del usuario con la nueva contraseña codificada
-                passwordEncoder.encode(passwordNueva)
+                usuario.getPassword()
         );
 
-        usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
+        if (!passwordActualCorrecto) {
+            throw new ApiException(
+                    HttpStatus.UNAUTHORIZED,
+                    "La contraseña actual es incorrecta"
+            );
+        }
+
+        usuario.setContrasena(passwordEncoder.encode(passwordNueva));
+
+        usuarioRepository.save(usuario);
     }
 
     public void cambiarNombre(UsuarioAutenticado usuarioAutenticado, String nuevoNombre) {
