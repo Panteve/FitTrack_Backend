@@ -11,6 +11,9 @@ import com.fittrack.security.UsuarioAutenticado;
 import com.fittrack.usuario.dto.CambiarPasswordRequest;
 import com.fittrack.usuario.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -23,6 +26,13 @@ public class UsuarioController {
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
+
+
+    @Operation( summary = "Cambiar contraseña", description = "Permite al usuario autenticado cambiar su contraseña actual por una nueva.") 
+    @ApiResponses({ 
+        @ApiResponse( responseCode = "204", description = "Contraseña cambiada correctamente"), 
+        @ApiResponse( responseCode = "400", description = "Datos inválidos"), 
+        @ApiResponse( responseCode = "401", description = "Contraseña actual incorrecta") })
 
     @PutMapping("/me/password")
     public ResponseEntity<Void> cambiarPassword(

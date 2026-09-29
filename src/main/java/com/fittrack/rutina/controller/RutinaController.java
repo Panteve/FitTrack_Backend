@@ -21,6 +21,9 @@ import com.fittrack.rutina.dto.RutinaDto;
 import com.fittrack.rutina.service.RutinaService;
 import com.fittrack.security.UsuarioAutenticado;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -35,12 +38,20 @@ public class RutinaController {
         this.rutinaService = rutinaService;
     }
 
+    @Operation(summary = "Listar mis rutinas", description = "Obtiene todas las rutinas del usuario autenticado.") 
+    @ApiResponse(responseCode = "200", description = "Listado de rutinas obtenido correctamente")
     @GetMapping
     public ResponseEntity<List<RutinaDto>> obtenerMisRutinas(
             @AuthenticationPrincipal UsuarioAutenticado usuario) {//endpoint para obtener las rutinas del usuario autenticado
         return ResponseEntity.ok(
                 rutinaService.obtenerRutinasPorUsuario(usuario.id()));//obtiene las rutinas del usuario autenticado a partir de su id
     }
+
+
+    @Operation(summary = "Obtener una rutina por ID", description = "Obtiene el detalle de una rutina perteneciente al usuario autenticado.")
+     @ApiResponses({ 
+        @ApiResponse(responseCode = "200", description = "Rutina encontrada"),
+        @ApiResponse(responseCode = "404", description = "Rutina no encontrada") })
 
     @GetMapping("/{id}")
     public ResponseEntity<RutinaDetalleDto> obtenerRutinaPorId(//endpoint para obtener una rutina por su id
@@ -49,6 +60,12 @@ public class RutinaController {
         return ResponseEntity.ok(
                 rutinaService.obtenerRutinaPorId(id, usuario.id()));//obtiene la rutina por su id y el id del usuario autenticado
     }
+
+
+    @Operation(summary = "Crear una rutina", description = "Crea una nueva rutina para el usuario autenticado.") 
+    @ApiResponses({ 
+        @ApiResponse(responseCode = "201", description = "Rutina creada correctamente"), 
+        @ApiResponse(responseCode = "400", description = "Datos inválidos") })
 
     @PostMapping
     public ResponseEntity<RutinaDetalleDto> crearRutina(
@@ -63,6 +80,13 @@ public class RutinaController {
     }
 
 
+
+    @Operation(summary = "Actualizar una rutina", description = "Actualiza una rutina existente perteneciente al usuario autenticado.") 
+    @ApiResponses({ 
+        @ApiResponse(responseCode = "200", description = "Rutina actualizada correctamente"), 
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"), 
+        @ApiResponse(responseCode = "404", description = "Rutina no encontrada") })
+
     @PutMapping("/{id}")//endpoint para actualizar una rutina existente
     public ResponseEntity<RutinaDetalleDto> actualizarRutina(
             @PathVariable Long id,
@@ -73,14 +97,12 @@ public class RutinaController {
                 // llamando al servicio para actualizar la rutina con los datos proporcionados
     }
 
-    /**
-     * Desactiva logicamente una rutina del usuario autenticado. La rutina y sus
-     * asociaciones se conservan en la base de datos.
-     *
-     * @param id identificador de la rutina
-     * @param usuario identidad obtenida del JWT
-     * @return respuesta sin contenido
-     */
+
+    @Operation(summary = "Eliminar una rutina", description = "Desactiva lógicamente una rutina perteneciente al usuario autenticado.") 
+    @ApiResponses({ 
+        @ApiResponse(responseCode = "204", description = "Rutina eliminada correctamente"), 
+        @ApiResponse(responseCode = "404", description = "Rutina no encontrada") })
+        
     @DeleteMapping("/{id}")//endpoint para eliminar una rutina existente
     public ResponseEntity<Void> eliminarRutina(
             @PathVariable Long id,

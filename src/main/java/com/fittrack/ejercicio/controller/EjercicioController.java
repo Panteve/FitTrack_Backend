@@ -19,6 +19,9 @@ import com.fittrack.ejercicio.dto.EjercicioResponse;
 import com.fittrack.ejercicio.service.EjercicioService;
 import com.fittrack.security.UsuarioAutenticado;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -33,13 +36,19 @@ public class EjercicioController {
         this.ejercicioService = ejercicioService;
     }
 
- 
+     @Operation(summary = "Listar mis ejercicios", description = "Obtiene todos los ejercicios del usuario autenticado.") 
+    @ApiResponse(responseCode = "200", description = "Listado de ejercicios obtenido correctamente")
+
     @GetMapping("/mis-ejercicios")//endpoint para obtener los ejercicios del usuario autenticado
     public ResponseEntity<List<EjercicioResponse>> obtenerMisEjercicios(
             @AuthenticationPrincipal UsuarioAutenticado usuario) { //usuario autenticado obtenido del JWT
         return ResponseEntity.ok(ejercicioService.listarTodos(usuario.id()));
     }
 
+    @Operation(summary = "Obtener un ejercicio por ID", description = "Obtiene un ejercicio específico perteneciente al usuario autenticado.") 
+    @ApiResponses({ 
+        @ApiResponse(responseCode = "200", description = "Ejercicio encontrado"), 
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado") })
 
     @GetMapping("/{id}")//endpoint para obtener un ejercicio por su id
     public ResponseEntity<EjercicioResponse> obtenerEjercicioPorId(
@@ -49,6 +58,10 @@ public class EjercicioController {
                 ejercicioService.obtenerPorId(id, usuario.id()));
     }
 
+    @Operation(summary = "Crear un ejercicio", description = "Crea un nuevo ejercicio asociado al usuario autenticado.") 
+    @ApiResponses({ 
+        @ApiResponse(responseCode = "201", description = "Ejercicio creado correctamente"), 
+        @ApiResponse(responseCode = "400", description = "Datos inválidos") })
 
     @PostMapping///endpoint para crear un nuevo ejercicio
     public ResponseEntity<EjercicioResponse> crearEjercicio(
@@ -58,7 +71,12 @@ public class EjercicioController {
         return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
     }
 
-
+    @Operation(summary = "Actualizar un ejercicio", description = "Actualiza los datos de un ejercicio existente del usuario autenticado.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Ejercicio actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado")
+    })
     @PutMapping("/{id}") //endpoint para actualizar un ejercicio existente
     public ResponseEntity<EjercicioResponse> actualizarEjercicio(
             @PathVariable Long id,
@@ -67,6 +85,13 @@ public class EjercicioController {
         return ResponseEntity.ok(ejercicioService.actualizar(id, request, usuario.id()));
     }
 
+    @Operation(summary = "Eliminar un ejercicio", description = "Elimina un ejercicio existente del usuario autenticado.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Ejercicio eliminado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado")
+    })
+
+    
     //Método para eliminar un ejercicio, se realiza una eliminación lógica en lugar de una eliminación física
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEjercicio(
