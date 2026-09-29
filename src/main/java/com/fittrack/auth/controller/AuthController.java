@@ -13,11 +13,13 @@ import com.fittrack.auth.dto.RegisterRequestDto;
 import com.fittrack.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "AuthController", description = "Controlador para la autenticación de usuarios")
 @RequiredArgsConstructor
 @SecurityRequirements
 public class AuthController {
