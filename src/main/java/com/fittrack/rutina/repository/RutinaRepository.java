@@ -12,16 +12,17 @@ import com.fittrack.rutina.enums.DiaSemana;
 public interface RutinaRepository extends JpaRepository<Rutina, Long> {
 
     /**
-     * Busca las rutinas activas de un usuario y carga sus ejercicios asociados.
+     * Busca las rutinas activas de un usuario, de la más reciente a la más antigua,
+     * y carga sus ejercicios asociados.
      *
      * @param usuarioId identificador del usuario
-     * @return rutinas activas del usuario con sus ejercicios
+     * @return rutinas activas ordenadas por identificador descendente
      */
     @EntityGraph(attributePaths = {
             "rutinaEjercicios",
             "rutinaEjercicios.ejercicio"
     })
-    List<Rutina> findDistinctByUsuario_IdAndStatusTrue(Long usuarioId);
+    List<Rutina> findDistinctByUsuario_IdAndStatusTrueOrderByIdDesc(Long usuarioId);
 
     /**
      * Busca una rutina activa perteneciente a un usuario y carga sus ejercicios.
@@ -59,6 +60,30 @@ public interface RutinaRepository extends JpaRepository<Rutina, Long> {
      *         o pertenece a otro usuario
      */
     Optional<Rutina> findByIdAndUsuario_IdAndStatusTrue(Long rutinaId, Long usuarioId);
+
+    /**
+     * Comprueba si el usuario ya tiene una rutina activa con el nombre indicado.
+     *
+     * @param usuarioId identificador del usuario
+     * @param nombre nombre normalizado de la rutina
+     * @return {@code true} si existe una rutina activa con el mismo nombre
+     */
+    boolean existsByUsuario_IdAndNombreIgnoreCaseAndStatusTrue(
+            Long usuarioId,
+            String nombre);
+
+    /**
+     * Comprueba si otra rutina activa del usuario tiene el nombre indicado.
+     *
+     * @param usuarioId identificador del usuario
+     * @param nombre nombre normalizado de la rutina
+     * @param rutinaId identificador de la rutina que se debe excluir
+     * @return {@code true} si otra rutina activa tiene el mismo nombre
+     */
+    boolean existsByUsuario_IdAndNombreIgnoreCaseAndStatusTrueAndIdNot(
+            Long usuarioId,
+            String nombre,
+            Long rutinaId);
 
     /**
      * Busca la primera rutina activa asignada al día indicado.
