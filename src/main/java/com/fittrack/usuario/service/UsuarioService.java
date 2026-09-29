@@ -2,11 +2,14 @@ package com.fittrack.usuario.service;
 
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fittrack.security.UsuarioAutenticado;
@@ -28,6 +31,9 @@ public class UsuarioService {
     private static final Set<String> TIPOS_FOTO_PERMITIDOS = Set.of(
             "image/jpeg",
             "image/png");
+    private static final Map<String, String> EXTENSIONES_FOTO = Map.of(
+            "image/jpeg", ".jpg",
+            "image/png", ".png");
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -107,11 +113,16 @@ public class UsuarioService {
      * @return URL temporal de la foto guardada
      * @throws ApiException si el usuario o la fotografía no son válidos
      */
+    @Transactional
     public FotoPerfilResponse guardarFotoPerfil(
             UsuarioAutenticado usuarioAutenticado,
             MultipartFile foto) {
         Usuario usuario = buscarUsuario(usuarioAutenticado.id());
         String contentType = validarFoto(foto);
+        String rutaAnterior = usuario.getFotoPerfilRuta();
+        String rutaNueva = construirRutaFotoPerfil(
+                usuario.getId(),
+                EXTENSIONES_FOTO.get(contentType));
 
         byte[] contenido;
         try {
@@ -123,9 +134,19 @@ public class UsuarioService {
         }
 
         String fotoPerfilUrl = fotoStorageService.guardarFotoPerfil(
-                usuario.getId(),
+                rutaNueva,
                 contenido,
                 contentType);
+
+        try {
+            usuario.setFotoPerfilRuta(rutaNueva);
+            usuarioRepository.saveAndFlush(usuario);
+        } catch (RuntimeException error) {
+            fotoStorageService.eliminarFotoPerfil(rutaNueva);
+            throw error;
+        }
+
+        fotoStorageService.eliminarFotoPerfil(rutaAnterior);
         return new FotoPerfilResponse(fotoPerfilUrl);
     }
 
@@ -135,9 +156,18 @@ public class UsuarioService {
      * @param usuarioAutenticado usuario obtenido del token
      * @throws ApiException si el usuario no existe
      */
+    @Transactional
     public void eliminarFotoPerfil(UsuarioAutenticado usuarioAutenticado) {
         Usuario usuario = buscarUsuario(usuarioAutenticado.id());
-        fotoStorageService.eliminarFotoPerfil(usuario.getId());
+        String rutaAnterior = usuario.getFotoPerfilRuta();
+
+        if (rutaAnterior == null || rutaAnterior.isBlank()) {
+            return;
+        }
+
+        usuario.setFotoPerfilRuta(null);
+        usuarioRepository.saveAndFlush(usuario);
+        fotoStorageService.eliminarFotoPerfil(rutaAnterior);
     }
 
     public UsuarioResponse eliminarUsuario(UsuarioAutenticado usuarioAutenticado) {
@@ -177,5 +207,10 @@ public class UsuarioService {
                     "La fotografía debe estar en formato JPEG o PNG.");
         }
         return contentType;
+    }
+
+    private String construirRutaFotoPerfil(Long usuarioId, String extension) {
+        return "usuarios/" + usuarioId + "/perfil/"
+                + UUID.randomUUID() + extension;
     }
 }

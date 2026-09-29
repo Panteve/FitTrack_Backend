@@ -44,7 +44,8 @@ public class AuthService {
 						request.getCorreo(), request.getContrasena()));
 		Usuario usuario = usuarioRepository.findByCorreoAndStatus(request.getCorreo(), true).orElseThrow(); //Se obtiene el usuario autenticado de la base de datos, 
 		// asegurando que su estado sea activo.
-		String fotoPerfilUrl = fotoStorageService.obtenerUrlFotoPerfil(usuario.getId());
+		String fotoPerfilUrl = fotoStorageService.obtenerUrlFotoPerfil(
+				usuario.getFotoPerfilRuta());
 		return AuthResponseDto.builder()
 				.token(jwtService.getToken(usuario))
 				.usuarioId(usuario.getId())

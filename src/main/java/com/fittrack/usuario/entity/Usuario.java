@@ -43,6 +43,10 @@ public class Usuario implements UserDetails {
     @Column(name = "fecha_registro", nullable = false)
     private LocalDate fechaRegistro;
 
+    /** Ruta interna de la foto dentro del bucket privado de Supabase. */
+    @Column(name = "foto_perfil_ruta", length = 500)
+    private String fotoPerfilRuta;
+
     @Builder.Default
     @Column(name = "status", nullable = false)
     private Boolean status = true;

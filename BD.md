@@ -119,5 +119,17 @@ registra lo que el usuario realizó durante un entrenamiento.
 | `contrasena_hash` | `varchar` |  |
 | `correo` | `varchar` |  Unique |
 | `fecha_registro` | `date` |  |
+| `foto_perfil_ruta` | `varchar(500)` | Nullable |
 | `nombre` | `varchar` |  |
+
+`foto_perfil_ruta` guarda la ruta interna del objeto en el bucket privado, no
+la URL firmada temporal. Para bases existentes se puede agregar explícitamente:
+
+```sql
+ALTER TABLE usuario
+ADD COLUMN IF NOT EXISTS foto_perfil_ruta VARCHAR(500);
+```
+
+Con `spring.jpa.hibernate.ddl-auto=update`, Hibernate también crea la columna
+al iniciar la aplicación.
 

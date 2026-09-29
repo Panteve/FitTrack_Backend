@@ -23,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SupabaseFotoStorageService implements FotoStorageService {
 
-    private static final String RUTA_FOTO_PERFIL = "usuarios/%d/foto-perfil";
-
     private final SupabaseStorageProperties properties;
     private final RestClient restClient;
 
@@ -79,12 +77,11 @@ public class SupabaseFotoStorageService implements FotoStorageService {
 
     /** {@inheritDoc} */
     @Override
-    public String obtenerUrlFotoPerfil(Long usuarioId) {
-        if (usuarioId == null || !properties.estaConfiguradoPerfil()) {
+    public String obtenerUrlFotoPerfil(String ruta) {
+        if (ruta == null || ruta.isBlank() || !properties.estaConfiguradoPerfil()) {
             return null;
         }
 
-        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
         try {
             return solicitarUrlFirmada(properties.profileBucket(), ruta);
         } catch (RestClientResponseException ex) {
@@ -92,13 +89,13 @@ public class SupabaseFotoStorageService implements FotoStorageService {
             boolean fotoInexistente = codigoRespuesta == HttpStatus.BAD_REQUEST.value()
                     || codigoRespuesta == HttpStatus.NOT_FOUND.value();
             if (!fotoInexistente) {
-                log.warn("No fue posible consultar la foto de perfil. usuarioId={}, status={}",
-                        usuarioId, codigoRespuesta);
+                log.warn("No fue posible consultar la foto de perfil. ruta={}, status={}",
+                        ruta, codigoRespuesta);
             }
             return null;
         } catch (RestClientException ex) {
             log.warn("No fue posible conectar con Supabase para consultar la foto de perfil. "
-                    + "usuarioId={}", usuarioId);
+                    + "ruta={}", ruta);
             return null;
         }
     }
@@ -106,37 +103,39 @@ public class SupabaseFotoStorageService implements FotoStorageService {
     /** {@inheritDoc} */
     @Override
     public String guardarFotoPerfil(
-            Long usuarioId,
+            String ruta,
             byte[] contenido,
             String contentType) {
         validarConfiguracionPerfil();
-        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
         try {
             restClient.post()
                     .uri(urlObjeto(properties.profileBucket(), ruta))
                     .headers(this::agregarAutorizacion)
-                    .header("x-upsert", "true")
+                    .header("x-upsert", "false")
                     .contentType(MediaType.parseMediaType(contentType))
                     .body(contenido)
                     .retrieve()
                     .toBodilessEntity();
             return solicitarUrlFirmada(properties.profileBucket(), ruta);
         } catch (RestClientResponseException ex) {
-            log.error("Supabase rechazó la foto de perfil. usuarioId={}, status={}",
-                    usuarioId, ex.getStatusCode().value());
+            log.error("Supabase rechazó la foto de perfil. ruta={}, status={}",
+                    ruta, ex.getStatusCode().value());
+            eliminarFotoPerfil(ruta);
             throw errorStorage();
         } catch (RestClientException ex) {
-            log.error("No fue posible guardar la foto de perfil. usuarioId={}",
-                    usuarioId, ex);
+            log.error("No fue posible guardar la foto de perfil. ruta={}",
+                    ruta, ex);
+            eliminarFotoPerfil(ruta);
             throw errorStorage();
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void eliminarFotoPerfil(Long usuarioId) {
-        validarConfiguracionPerfil();
-        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
+    public void eliminarFotoPerfil(String ruta) {
+        if (ruta == null || ruta.isBlank() || !properties.estaConfiguradoPerfil()) {
+            return;
+        }
         try {
             restClient.method(HttpMethod.DELETE)
                     .uri(urlColeccion(properties.profileBucket()))
@@ -150,14 +149,12 @@ public class SupabaseFotoStorageService implements FotoStorageService {
             boolean fotoInexistente = codigoRespuesta == HttpStatus.BAD_REQUEST.value()
                     || codigoRespuesta == HttpStatus.NOT_FOUND.value();
             if (!fotoInexistente) {
-                log.error("Supabase rechazó eliminar la foto de perfil. "
-                        + "usuarioId={}, status={}", usuarioId, codigoRespuesta);
-                throw errorStorage();
+                log.warn("Supabase rechazó eliminar una foto de perfil anterior. "
+                        + "ruta={}, status={}", ruta, codigoRespuesta);
             }
         } catch (RestClientException ex) {
-            log.error("No fue posible eliminar la foto de perfil. usuarioId={}",
-                    usuarioId, ex);
-            throw errorStorage();
+            log.warn("No fue posible eliminar una foto de perfil anterior. ruta={}",
+                    ruta);
         }
     }
 

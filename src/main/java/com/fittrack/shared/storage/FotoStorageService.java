@@ -23,27 +23,27 @@ public interface FotoStorageService {
     /**
      * Busca la foto de perfil de un usuario y genera una URL temporal si existe.
      *
-     * @param usuarioId identificador del usuario autenticado
+     * @param ruta ruta interna guardada en el usuario
      * @return URL firmada o {@code null} cuando el usuario no tiene foto
      */
-    String obtenerUrlFotoPerfil(Long usuarioId);
+    String obtenerUrlFotoPerfil(String ruta);
 
     /**
-     * Sube o reemplaza la foto de perfil de un usuario.
+     * Sube una foto de perfil a una ruta nueva.
      *
-     * @param usuarioId identificador del usuario autenticado
+     * @param ruta ruta interna única
      * @param contenido bytes de la imagen validada
      * @param contentType tipo MIME validado
      * @return URL firmada de la foto guardada
      */
-    String guardarFotoPerfil(Long usuarioId, byte[] contenido, String contentType);
+    String guardarFotoPerfil(String ruta, byte[] contenido, String contentType);
 
     /**
-     * Elimina la foto de perfil del usuario si existe.
+     * Intenta eliminar una foto de perfil que ya no se utiliza.
      *
-     * @param usuarioId identificador del usuario autenticado
+     * @param ruta ruta interna almacenada en la base de datos
      */
-    void eliminarFotoPerfil(Long usuarioId);
+    void eliminarFotoPerfil(String ruta);
 
     /**
      * Intenta eliminar una fotografía que ya no se utiliza.
