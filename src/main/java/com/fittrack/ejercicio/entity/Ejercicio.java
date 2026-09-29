@@ -1,5 +1,7 @@
 package com.fittrack.ejercicio.entity;
 
+import com.fittrack.usuario.entity.Usuario;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,9 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import com.fittrack.usuario.entity.Usuario;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +30,6 @@ public class Ejercicio {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    /* TODO: Convertir grupo_muscular en una entidad para estandarizar */
     @Column(name = "grupo_muscular", nullable = false)
     private String grupoMuscular;
 
