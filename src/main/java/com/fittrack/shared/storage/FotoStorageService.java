@@ -1,6 +1,6 @@
 package com.fittrack.shared.storage;
 
-/** Administra las fotografías de entrenamientos en almacenamiento externo. */
+/** Administra las fotografías de FitTrack en almacenamiento externo. */
 public interface FotoStorageService {
 
     /**
@@ -27,6 +27,23 @@ public interface FotoStorageService {
      * @return URL firmada o {@code null} cuando el usuario no tiene foto
      */
     String obtenerUrlFotoPerfil(Long usuarioId);
+
+    /**
+     * Sube o reemplaza la foto de perfil de un usuario.
+     *
+     * @param usuarioId identificador del usuario autenticado
+     * @param contenido bytes de la imagen validada
+     * @param contentType tipo MIME validado
+     * @return URL firmada de la foto guardada
+     */
+    String guardarFotoPerfil(Long usuarioId, byte[] contenido, String contentType);
+
+    /**
+     * Elimina la foto de perfil del usuario si existe.
+     *
+     * @param usuarioId identificador del usuario autenticado
+     */
+    void eliminarFotoPerfil(Long usuarioId);
 
     /**
      * Intenta eliminar una fotografía que ya no se utiliza.

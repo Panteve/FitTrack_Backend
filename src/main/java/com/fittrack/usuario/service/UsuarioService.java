@@ -1,12 +1,18 @@
 package com.fittrack.usuario.service;
 
 
+import java.io.IOException;
+import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fittrack.security.UsuarioAutenticado;
 import com.fittrack.shared.exception.ApiException;
+import com.fittrack.shared.storage.FotoStorageService;
+import com.fittrack.usuario.dto.FotoPerfilResponse;
 import com.fittrack.usuario.dto.UsuarioResponse;
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
@@ -14,18 +20,34 @@ import com.fittrack.usuario.repository.UsuarioRepository;
 
 
 
-@Service 
+/** Gestiona los datos y operaciones de la cuenta autenticada. */
+@Service
 public class UsuarioService {
+
+    private static final long TAMANO_MAXIMO_FOTO = 5L * 1024L * 1024L;
+    private static final Set<String> TIPOS_FOTO_PERMITIDOS = Set.of(
+            "image/jpeg",
+            "image/png");
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FotoStorageService fotoStorageService;
 
+    /**
+     * Crea el servicio de usuarios con sus dependencias.
+     *
+     * @param usuarioRepository repositorio de usuarios
+     * @param passwordEncoder codificador seguro de contraseñas
+     * @param fotoStorageService almacenamiento externo de fotografías
+     */
     public UsuarioService(
             UsuarioRepository usuarioRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            FotoStorageService fotoStorageService) {
 
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.fotoStorageService = fotoStorageService;
     }
 
     /**
@@ -77,6 +99,47 @@ public class UsuarioService {
         usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
     }
 
+    /**
+     * Valida y guarda la foto de perfil del usuario autenticado.
+     *
+     * @param usuarioAutenticado usuario obtenido del token
+     * @param foto archivo JPEG o PNG recibido por multipart
+     * @return URL temporal de la foto guardada
+     * @throws ApiException si el usuario o la fotografía no son válidos
+     */
+    public FotoPerfilResponse guardarFotoPerfil(
+            UsuarioAutenticado usuarioAutenticado,
+            MultipartFile foto) {
+        Usuario usuario = buscarUsuario(usuarioAutenticado.id());
+        String contentType = validarFoto(foto);
+
+        byte[] contenido;
+        try {
+            contenido = foto.getBytes();
+        } catch (IOException ex) {
+            throw new ApiException(
+                    HttpStatus.BAD_REQUEST,
+                    "No fue posible leer la fotografía enviada.");
+        }
+
+        String fotoPerfilUrl = fotoStorageService.guardarFotoPerfil(
+                usuario.getId(),
+                contenido,
+                contentType);
+        return new FotoPerfilResponse(fotoPerfilUrl);
+    }
+
+    /**
+     * Elimina la foto de perfil del usuario autenticado si existe.
+     *
+     * @param usuarioAutenticado usuario obtenido del token
+     * @throws ApiException si el usuario no existe
+     */
+    public void eliminarFotoPerfil(UsuarioAutenticado usuarioAutenticado) {
+        Usuario usuario = buscarUsuario(usuarioAutenticado.id());
+        fotoStorageService.eliminarFotoPerfil(usuario.getId());
+    }
+
     public UsuarioResponse eliminarUsuario(UsuarioAutenticado usuarioAutenticado) {
         Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
                 .orElseThrow(() ->
@@ -87,5 +150,32 @@ public class UsuarioService {
         usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
 
         return new UsuarioResponse(usuario.getId(), usuario.getNombre(), usuario.getStatus());// Devolver una respuesta con los datos del usuario eliminado
+    }
+
+    private Usuario buscarUsuario(Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuario no encontrado"));
+    }
+
+    private String validarFoto(MultipartFile foto) {
+        if (foto == null || foto.isEmpty()) {
+            throw new ApiException(
+                    HttpStatus.BAD_REQUEST,
+                    "La fotografía no puede estar vacía.");
+        }
+        if (foto.getSize() > TAMANO_MAXIMO_FOTO) {
+            throw new ApiException(
+                    HttpStatus.PAYLOAD_TOO_LARGE,
+                    "La fotografía no puede superar 5 MB.");
+        }
+        String contentType = foto.getContentType();
+        if (contentType == null || !TIPOS_FOTO_PERMITIDOS.contains(contentType)) {
+            throw new ApiException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                    "La fotografía debe estar en formato JPEG o PNG.");
+        }
+        return contentType;
     }
 }

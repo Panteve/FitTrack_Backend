@@ -1,16 +1,20 @@
 package com.fittrack.usuario.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fittrack.security.UsuarioAutenticado;
 import com.fittrack.usuario.dto.CambiarNombreRequest;
 import com.fittrack.usuario.dto.CambiarPasswordRequest;
+import com.fittrack.usuario.dto.FotoPerfilResponse;
 import com.fittrack.usuario.dto.UsuarioResponse;
 import com.fittrack.usuario.service.UsuarioService;
 
@@ -66,6 +70,59 @@ public class UsuarioController {
 
         usuarioService.cambiarNombre(usuario, request.getNuevoNombre());
 
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Sube o reemplaza la foto de perfil del usuario autenticado.
+     *
+     * @param foto imagen JPEG o PNG de máximo 5 MB
+     * @param usuario identidad obtenida del JWT
+     * @return URL temporal de la fotografía guardada
+     */
+    @PutMapping(
+            value = "/me/foto",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Subir foto de perfil",
+            description = "Sube o reemplaza la foto de perfil del usuario autenticado.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Foto guardada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Archivo vacío o inválido"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "413", description = "Archivo demasiado grande"),
+        @ApiResponse(responseCode = "415", description = "Formato no permitido"),
+        @ApiResponse(responseCode = "502", description = "Fallo de Supabase Storage"),
+        @ApiResponse(responseCode = "503", description = "Storage no configurado")
+    })
+    public ResponseEntity<FotoPerfilResponse> guardarFotoPerfil(
+            @RequestPart("foto") MultipartFile foto,
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return ResponseEntity.ok(
+                usuarioService.guardarFotoPerfil(usuario, foto));
+    }
+
+    /**
+     * Elimina la foto de perfil del usuario autenticado.
+     *
+     * @param usuario identidad obtenida del JWT
+     * @return respuesta sin contenido
+     */
+    @DeleteMapping("/me/foto")
+    @Operation(
+            summary = "Eliminar foto de perfil",
+            description = "Quita la foto de perfil si el usuario tiene una guardada.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Foto eliminada o inexistente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+        @ApiResponse(responseCode = "502", description = "Fallo de Supabase Storage"),
+        @ApiResponse(responseCode = "503", description = "Storage no configurado")
+    })
+    public ResponseEntity<Void> eliminarFotoPerfil(
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        usuarioService.eliminarFotoPerfil(usuario);
         return ResponseEntity.noContent().build();
     }
 

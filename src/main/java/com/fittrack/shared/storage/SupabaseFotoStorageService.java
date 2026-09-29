@@ -103,6 +103,64 @@ public class SupabaseFotoStorageService implements FotoStorageService {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String guardarFotoPerfil(
+            Long usuarioId,
+            byte[] contenido,
+            String contentType) {
+        validarConfiguracionPerfil();
+        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
+        try {
+            restClient.post()
+                    .uri(urlObjeto(properties.profileBucket(), ruta))
+                    .headers(this::agregarAutorizacion)
+                    .header("x-upsert", "true")
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(contenido)
+                    .retrieve()
+                    .toBodilessEntity();
+            return solicitarUrlFirmada(properties.profileBucket(), ruta);
+        } catch (RestClientResponseException ex) {
+            log.error("Supabase rechazó la foto de perfil. usuarioId={}, status={}",
+                    usuarioId, ex.getStatusCode().value());
+            throw errorStorage();
+        } catch (RestClientException ex) {
+            log.error("No fue posible guardar la foto de perfil. usuarioId={}",
+                    usuarioId, ex);
+            throw errorStorage();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void eliminarFotoPerfil(Long usuarioId) {
+        validarConfiguracionPerfil();
+        String ruta = RUTA_FOTO_PERFIL.formatted(usuarioId);
+        try {
+            restClient.method(HttpMethod.DELETE)
+                    .uri(urlColeccion(properties.profileBucket()))
+                    .headers(this::agregarAutorizacion)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("prefixes", List.of(ruta)))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientResponseException ex) {
+            int codigoRespuesta = ex.getStatusCode().value();
+            boolean fotoInexistente = codigoRespuesta == HttpStatus.BAD_REQUEST.value()
+                    || codigoRespuesta == HttpStatus.NOT_FOUND.value();
+            if (!fotoInexistente) {
+                log.error("Supabase rechazó eliminar la foto de perfil. "
+                        + "usuarioId={}, status={}", usuarioId, codigoRespuesta);
+                throw errorStorage();
+            }
+        } catch (RestClientException ex) {
+            log.error("No fue posible eliminar la foto de perfil. usuarioId={}",
+                    usuarioId, ex);
+            throw errorStorage();
+        }
+    }
+
     @Override
     public void eliminar(String ruta) {
         if (!properties.estaConfigurado() || ruta == null || ruta.isBlank()) {
@@ -129,6 +187,14 @@ public class SupabaseFotoStorageService implements FotoStorageService {
             throw new ApiException(
                     org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
                     "El almacenamiento de fotografías no está configurado.");
+        }
+    }
+
+    private void validarConfiguracionPerfil() {
+        if (!properties.estaConfiguradoPerfil()) {
+            throw new ApiException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "El almacenamiento de fotos de perfil no está configurado.");
         }
     }
 
