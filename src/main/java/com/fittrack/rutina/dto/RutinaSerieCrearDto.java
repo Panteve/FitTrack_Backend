@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 /**
  * Datos de una serie planificada para un ejercicio de la rutina.
@@ -17,7 +18,7 @@ public record RutinaSerieCrearDto(
         @NotNull @Positive
         Integer numeroSerie,
 
-        @NotNull @Positive
+        @NotNull @PositiveOrZero
         Integer repeticionesObjetivo,
 
         @NotNull @DecimalMin(value = "0.0", inclusive = true)

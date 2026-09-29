@@ -394,7 +394,7 @@ public class EntrenamientoService {
                 registro.getRutinaEjercicioId(),
                 registro.getEjercicio().getId(),
                 registro.getEjercicio().getNombre(),
-                registro.getEjercicio().getGrupoMuscular(),
+                registro.getEjercicio().getGrupoMuscular().getValor(),
                 registro.getOrdenEjercicio(),
                 registro.getNumeroSerie(),
                 registro.getRepeticiones(),

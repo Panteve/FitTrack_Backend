@@ -1,8 +1,11 @@
 package com.fittrack.ejercicio.entity;
 
 import com.fittrack.usuario.entity.Usuario;
+import com.fittrack.ejercicio.enums.GrupoMuscular;
+import com.fittrack.ejercicio.enums.GrupoMuscularConverter;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +33,9 @@ public class Ejercicio {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    @Convert(converter = GrupoMuscularConverter.class)
     @Column(name = "grupo_muscular", nullable = false)
-    private String grupoMuscular;
+    private GrupoMuscular grupoMuscular;
 
     @Column(name = "status", nullable = false)
     private Boolean status = true; // Por defecto, el ejercicio está activo
@@ -41,7 +45,7 @@ public class Ejercicio {
     public Ejercicio() {
     }
 
-    public Ejercicio(Usuario usuario, String nombre, String grupoMuscular, Boolean status) {
+    public Ejercicio(Usuario usuario, String nombre, GrupoMuscular grupoMuscular, Boolean status) {
         this.usuario = usuario;
         this.nombre = nombre;
         this.grupoMuscular = grupoMuscular;

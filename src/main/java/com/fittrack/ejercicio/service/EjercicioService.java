@@ -93,7 +93,7 @@ public class EjercicioService {
         Ejercicio ejercicio = new Ejercicio(
                 usuario,
                 request.nombre().trim(),
-                request.grupoMuscular().trim(),
+                request.grupoMuscular(),
                 true // Por defecto, el ejercicio está activo
         );
 
@@ -116,7 +116,7 @@ public class EjercicioService {
             Long usuarioId) {
         Ejercicio ejercicio = buscarEjercicioPropio(ejercicioId, usuarioId);
         ejercicio.setNombre(request.nombre().trim());
-        ejercicio.setGrupoMuscular(request.grupoMuscular().trim());
+        ejercicio.setGrupoMuscular(request.grupoMuscular());
 
         return toResponse(ejercicio);
     }
