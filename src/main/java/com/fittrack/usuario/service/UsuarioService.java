@@ -22,10 +22,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void cambiarPassword(
-        UsuarioAutenticado usuarioAutenticado,
-            String passwordActual,
-            String passwordNueva) {
+    public void cambiarPassword(UsuarioAutenticado usuarioAutenticado,String passwordActual,String passwordNueva) {
 
         Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
                 .orElseThrow(() ->
@@ -42,6 +39,16 @@ public class UsuarioService {
         usuario.setContrasena(// Actualizar la contraseña del usuario con la nueva contraseña codificada
                 passwordEncoder.encode(passwordNueva)
         );
+
+        usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
+    }
+
+    public void cambiarNombre(UsuarioAutenticado usuarioAutenticado, String nuevoNombre) {
+        Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
+                .orElseThrow(() ->
+                        new RuntimeException("Usuario no encontrado"));// Buscar el usuario en la base de datos por su ID
+
+        usuario.setNombre(nuevoNombre);// Actualizar el nombre del usuario con el nuevo nombre proporcionado
 
         usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
     }
