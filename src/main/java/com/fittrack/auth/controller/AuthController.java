@@ -12,6 +12,9 @@ import com.fittrack.auth.dto.LoginRequestDto;
 import com.fittrack.auth.dto.RegisterRequestDto;
 import com.fittrack.auth.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,11 +29,21 @@ public class AuthController {
 
 	private final AuthService authService;
 
+	@Operation( summary = "Iniciar sesión")
+	@ApiResponses({ 
+		@ApiResponse( responseCode = "200", description = "Inicio de sesión exitoso"), 
+		@ApiResponse( responseCode = "400", description = "Datos de inicio de sesión inválidos"), 
+		@ApiResponse( responseCode = "401", description = "Credenciales incorrectas") })
 	@PostMapping(value = "/login")
 	public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
 		return ResponseEntity.ok(authService.login(request));
 	}
 
+	@Operation( summary = "Registrar un nuevo usuario", description = "Crea una nueva cuenta de usuario y retorna los datos de autenticación.") 
+	@ApiResponses({ 
+		@ApiResponse( responseCode = "201", description = "Usuario registrado correctamente"), 
+		@ApiResponse( responseCode = "400", description = "Datos de registro inválidos"), 
+		@ApiResponse( responseCode = "409", description = "El correo electrónico ya está registrado") })
 	@PostMapping(value = "/register")
 	public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
 		return ResponseEntity
