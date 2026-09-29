@@ -38,6 +38,16 @@ public interface EntrenamientoRepository extends JpaRepository<Entrenamiento, Lo
             @Param("usuarioId") Long usuarioId);
 
     /**
+     * Obtiene como máximo los veinte entrenamientos activos más recientes.
+     *
+     * @param usuarioId identificador del usuario
+     * @return entrenamientos ordenados del más reciente al más antiguo
+     */
+    @EntityGraph(attributePaths = "rutina")
+    List<Entrenamiento> findTop20ByUsuario_IdAndStatusTrueOrderByFechaDescIdDesc(
+            Long usuarioId);
+
+    /**
      * Obtiene un entrenamiento activo con todas las relaciones necesarias para
      * construir su detalle.
      *

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fittrack.rutina.entity.Rutina;
+import com.fittrack.rutina.enums.DiaSemana;
 
 public interface RutinaRepository extends JpaRepository<Rutina, Long> {
 
@@ -58,4 +59,25 @@ public interface RutinaRepository extends JpaRepository<Rutina, Long> {
      *         o pertenece a otro usuario
      */
     Optional<Rutina> findByIdAndUsuario_IdAndStatusTrue(Long rutinaId, Long usuarioId);
+
+    /**
+     * Busca la primera rutina activa asignada al día indicado.
+     *
+     * @param usuarioId identificador del usuario
+     * @param diaSemana día que debe tener la rutina
+     * @return rutina encontrada con sus ejercicios
+     */
+    @EntityGraph(attributePaths = "rutinaEjercicios")
+    Optional<Rutina> findFirstByUsuario_IdAndStatusTrueAndDiaSemanaOrderByIdAsc(
+            Long usuarioId,
+            DiaSemana diaSemana);
+
+    /**
+     * Busca la primera rutina activa disponible para usarla como alternativa.
+     *
+     * @param usuarioId identificador del usuario
+     * @return rutina encontrada con sus ejercicios
+     */
+    @EntityGraph(attributePaths = "rutinaEjercicios")
+    Optional<Rutina> findFirstByUsuario_IdAndStatusTrueOrderByIdAsc(Long usuarioId);
 }
