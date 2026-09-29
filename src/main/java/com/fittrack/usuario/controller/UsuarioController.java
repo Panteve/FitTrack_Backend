@@ -48,4 +48,20 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation( summary = "Cambiar nombre", description = "Permite al usuario autenticado cambiar su nombre actual por uno nuevo.")
+    @ApiResponses({
+        @ApiResponse( responseCode = "204", description = "Nombre cambiado correctamente"),
+        @ApiResponse( responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse( responseCode = "401", description = "Usuario no autenticado")
+    })
+    @PutMapping("/me/nombre")
+    public ResponseEntity<Void> cambiarNombre(
+            @RequestBody String nuevoNombre,
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+
+        usuarioService.cambiarNombre(usuario, nuevoNombre);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
