@@ -16,5 +16,6 @@ public record EntrenamientoCrearDto(
         @NotNull @PastOrPresent LocalDate fecha,
         @NotNull @Positive Integer duracionMinutos,
         @Size(max = 1000) String notas,
+        @Positive Integer seriesTotales,
         @NotEmpty List<@Valid RegistroSerieRequest> series) {
 }

@@ -45,6 +45,9 @@ public class Entrenamiento {
     @Column(name = "duracion_minutos", nullable = false)
     private Integer duracionMinutos;
 
+    @Column(name = "series_totales")
+    private Integer seriesTotales;
+
     @Column(name = "notas")
     private String notas;
 
@@ -72,6 +75,7 @@ public class Entrenamiento {
      * @param rutina rutina realizada
      * @param fecha fecha de realización
      * @param duracionMinutos duración total en minutos
+     * @param seriesTotales cantidad de series disponibles al terminar
      * @param notas observaciones opcionales
      */
     public Entrenamiento(
@@ -79,11 +83,13 @@ public class Entrenamiento {
             Rutina rutina,
             LocalDate fecha,
             Integer duracionMinutos,
+            Integer seriesTotales,
             String notas) {
         this.usuario = usuario;
         this.rutina = rutina;
         this.fecha = fecha;
         this.duracionMinutos = duracionMinutos;
+        this.seriesTotales = seriesTotales;
         this.notas = notas;
         this.status = true;
     }

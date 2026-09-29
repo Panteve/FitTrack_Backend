@@ -115,6 +115,7 @@ public class EntrenamientoService {
                 rutina,
                 request.fecha(),
                 request.duracionMinutos(),
+                obtenerSeriesTotales(request.seriesTotales(), registros.size()),
                 normalizarNotas(request.notas()));
         entrenamiento.reemplazarRegistrosSeries(registros);
 
@@ -147,6 +148,8 @@ public class EntrenamientoService {
         entrenamiento.setRutina(rutina);
         entrenamiento.setFecha(request.fecha());
         entrenamiento.setDuracionMinutos(request.duracionMinutos());
+        entrenamiento.setSeriesTotales(
+                obtenerSeriesTotales(request.seriesTotales(), registros.size()));
         entrenamiento.setNotas(normalizarNotas(request.notas()));
         entrenamiento.reemplazarRegistrosSeries(registros);
         entrenamientoRepository.flush();
@@ -376,6 +379,9 @@ public class EntrenamientoService {
                 entrenamiento.getRutina().getNombre(),
                 entrenamiento.getFecha(),
                 entrenamiento.getDuracionMinutos(),
+                obtenerSeriesTotales(
+                        entrenamiento.getSeriesTotales(),
+                        series.size()),
                 entrenamiento.getNotas(),
                 fotoUrl,
                 series);
@@ -388,10 +394,25 @@ public class EntrenamientoService {
                 registro.getRutinaEjercicioId(),
                 registro.getEjercicio().getId(),
                 registro.getEjercicio().getNombre(),
+                registro.getEjercicio().getGrupoMuscular(),
                 registro.getOrdenEjercicio(),
                 registro.getNumeroSerie(),
                 registro.getRepeticiones(),
                 registro.getPeso());
+    }
+
+    private int obtenerSeriesTotales(
+            Integer seriesTotales,
+            int seriesCompletadas) {
+        if (seriesTotales == null) {
+            return seriesCompletadas;
+        }
+        if (seriesTotales < seriesCompletadas) {
+            throw new ApiException(
+                    HttpStatus.BAD_REQUEST,
+                    "Las series totales no pueden ser menores que las completadas.");
+        }
+        return seriesTotales;
     }
 
     private ApiException entrenamientoNoEncontrado() {

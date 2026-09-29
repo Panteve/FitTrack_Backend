@@ -10,6 +10,7 @@ public record EntrenamientoDetalleDto(
         String nombreRutina,
         LocalDate fecha,
         Integer duracionMinutos,
+        Integer seriesTotales,
         String notas,
         String fotoUrl,
         List<RegistroSerieDetalleDto> series) {

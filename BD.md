@@ -17,6 +17,7 @@
 |------|------|-------------|
 | `id` | `int8` | Primary |
 | `duracion_minutos` | `int4` |  |
+| `series_totales` | `int4` |  Nullable |
 | `fecha` | `date` |  |
 | `notas` | `varchar` |  Nullable |
 | `url_foto` | `varchar` |  Nullable |
@@ -27,6 +28,10 @@
 `entrenamiento.status` implementa el borrado lógico. La columna `url_foto`
 guarda la ruta interna de la imagen dentro del bucket privado de Supabase
 Storage, no una URL firmada temporal.
+
+`entrenamiento.series_totales` conserva cuántas series existían al terminar
+la sesión. Los entrenamientos antiguos pueden mantenerla en `null`; en ese
+caso el backend usa como respaldo la cantidad de series registradas.
 
 ## Table `registro_serie`
 
