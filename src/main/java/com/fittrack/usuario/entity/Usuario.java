@@ -42,6 +42,10 @@ public class Usuario implements UserDetails {
     @Column(name = "fecha_registro", nullable = false)
     private LocalDate fechaRegistro;
 
+    @Builder.Default
+    @Column(name = "status", nullable = false)
+    private Boolean status = true;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();

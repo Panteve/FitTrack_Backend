@@ -2,6 +2,7 @@ package com.fittrack.usuario.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fittrack.security.UsuarioAutenticado;
 import com.fittrack.usuario.dto.CambiarNombreRequest;
 import com.fittrack.usuario.dto.CambiarPasswordRequest;
+import com.fittrack.usuario.dto.UsuarioResponse;
 import com.fittrack.usuario.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -65,6 +67,20 @@ public class UsuarioController {
         usuarioService.cambiarNombre(usuario, request.getNuevoNombre());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/me/eliminar")
+    @Operation(summary = "Eliminar usuario", description = "Permite al usuario autenticado eliminar su cuenta de forma lógica (marcando el estado como inactivo).")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
+        @ApiResponse(responseCode = "401", description = "Usuario no autenticado")
+    })
+    public ResponseEntity<UsuarioResponse> eliminarUsuario(
+            @AuthenticationPrincipal UsuarioAutenticado usuario) {
+
+        UsuarioResponse response = usuarioService.eliminarUsuario(usuario);
+
+        return ResponseEntity.ok(response);
     }
 
 }

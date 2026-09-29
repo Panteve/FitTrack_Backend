@@ -144,7 +144,7 @@ public class EjercicioService {
                         "Ejercicio no encontrado."));
     }
 
-    private EjercicioResponse toResponse(Ejercicio ejercicio) {
+    private EjercicioResponse toResponse(Ejercicio ejercicio) { // Método para convertir un objeto Ejercicio a EjercicioResponse
         return new EjercicioResponse(
                 ejercicio.getId(),
                 ejercicio.getNombre(),

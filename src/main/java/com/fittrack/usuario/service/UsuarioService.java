@@ -6,7 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fittrack.security.UsuarioAutenticado;
+<<<<<<< Updated upstream
 import com.fittrack.shared.exception.ApiException;
+=======
+import com.fittrack.usuario.dto.UsuarioResponse;
+>>>>>>> Stashed changes
 import com.fittrack.usuario.entity.Usuario;
 import com.fittrack.usuario.repository.UsuarioRepository;
 
@@ -71,5 +75,17 @@ public class UsuarioService {
         usuario.setNombre(nuevoNombre);// Actualizar el nombre del usuario con el nuevo nombre proporcionado
 
         usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
+    }
+
+    public UsuarioResponse eliminarUsuario(UsuarioAutenticado usuarioAutenticado) {
+        Usuario usuario = usuarioRepository.findById(usuarioAutenticado.id())
+                .orElseThrow(() ->
+                        new RuntimeException("Usuario no encontrado"));// Buscar el usuario en la base de datos por su ID
+
+        usuario.setStatus(false); // Marcar como eliminado
+
+        usuarioRepository.save(usuario);// Guardar los cambios en la base de datos
+
+        return new UsuarioResponse(usuario.getId(), usuario.getNombre(), usuario.getStatus());// Devolver una respuesta con los datos del usuario eliminado
     }
 }
