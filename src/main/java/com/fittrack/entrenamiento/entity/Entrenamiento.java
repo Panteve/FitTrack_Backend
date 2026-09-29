@@ -48,7 +48,7 @@ public class Entrenamiento {
     @Column(name = "notas")
     private String notas;
 
-    @Column(name = "url_foto")
+    @Column(name = "url_foto", nullable = true)
     private String urlFoto;
 
     @Column(name = "status", nullable = false,

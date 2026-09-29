@@ -8,6 +8,7 @@ import java.util.List;
  * @param id identificador de la asociación entre rutina y ejercicio
  * @param ejercicioId identificador del ejercicio asociado
  * @param nombre nombre del ejercicio asociado
+ * @param grupoMuscular grupo muscular principal del ejercicio
  * @param orden posición del ejercicio dentro de la rutina
  * @param series series planificadas para el ejercicio
  */
@@ -15,6 +16,7 @@ public record RutinaEjercicioDetalleDto(
         Long id,
         Long ejercicioId,
         String nombre,
+        String grupoMuscular,
         Integer orden,
         List<RutinaSerieDetalleDto> series
 ) {
