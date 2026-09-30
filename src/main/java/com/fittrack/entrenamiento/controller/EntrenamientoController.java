@@ -8,16 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fittrack.entrenamiento.dto.EntrenamientoActualizarDto;
+import com.fittrack.entrenamiento.dto.EntrenamientoActualizarNotasDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoCrearDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoDetalleDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoDto;
@@ -84,20 +84,23 @@ public class EntrenamientoController {
                 .body(entrenamientoService.crear(request, usuario.id()));
     }
 
-    /** Reemplaza los datos editables y las series de un entrenamiento. */
-    @PutMapping("/{id}")
-    @Operation(summary = "Actualizar un entrenamiento")
+    /** Actualiza únicamente las notas de un entrenamiento. */
+    @PatchMapping("/{id}")
+    @Operation(summary = "Actualizar las notas de un entrenamiento")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Entrenamiento actualizado"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "404", description = "Entrenamiento no encontrado")
     })
-    public ResponseEntity<EntrenamientoDetalleDto> actualizar(
+    public ResponseEntity<EntrenamientoDetalleDto> actualizarNotas(
             @PathVariable Long id,
-            @Valid @RequestBody EntrenamientoActualizarDto request,
+            @Valid @RequestBody EntrenamientoActualizarNotasDto request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         return ResponseEntity.ok(
-                entrenamientoService.actualizar(id, request, usuario.id()));
+                entrenamientoService.actualizarNotas(
+                        id,
+                        request,
+                        usuario.id()));
     }
 
     /** Desactiva lógicamente un entrenamiento. */

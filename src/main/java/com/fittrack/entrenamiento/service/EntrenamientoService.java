@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fittrack.entrenamiento.dto.EntrenamientoActualizarDto;
+import com.fittrack.entrenamiento.dto.EntrenamientoActualizarNotasDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoCrearDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoDetalleDto;
 import com.fittrack.entrenamiento.dto.EntrenamientoDto;
@@ -125,33 +125,22 @@ public class EntrenamientoService {
     }
 
     /**
-     * Reemplaza los datos editables y las series de un entrenamiento.
+     * Actualiza únicamente las notas de un entrenamiento.
      *
      * @param entrenamientoId identificador del entrenamiento
-     * @param request datos nuevos
+     * @param request nuevas notas
      * @param usuarioId identificador del propietario
      * @return detalle actualizado
      */
     @Transactional
-    public EntrenamientoDetalleDto actualizar(
+    public EntrenamientoDetalleDto actualizarNotas(
             Long entrenamientoId,
-            EntrenamientoActualizarDto request,
+            EntrenamientoActualizarNotasDto request,
             Long usuarioId) {
         Entrenamiento entrenamiento = buscarDetalleActivo(
                 entrenamientoId,
                 usuarioId);
-        Rutina rutina = buscarRutinaActiva(request.rutinaId(), usuarioId);
-        List<RegistroSerie> registros = construirRegistros(
-                request.series(),
-                rutina);
-
-        entrenamiento.setRutina(rutina);
-        entrenamiento.setFecha(request.fecha());
-        entrenamiento.setDuracionMinutos(request.duracionMinutos());
-        entrenamiento.setSeriesTotales(
-                obtenerSeriesTotales(request.seriesTotales(), registros.size()));
         entrenamiento.setNotas(normalizarNotas(request.notas()));
-        entrenamiento.reemplazarRegistrosSeries(registros);
         entrenamientoRepository.flush();
 
         return toDetalleDto(entrenamiento);
