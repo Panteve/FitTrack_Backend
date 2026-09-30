@@ -18,7 +18,7 @@ import com.fittrack.shared.exception.ApiException;
 
 import lombok.extern.slf4j.Slf4j;
 
-/** Implementa el almacenamiento de fotografías mediante Supabase Storage. */
+//Implementa el almacenamiento de fotografías mediante Supabase Storage.
 @Slf4j
 @Service
 public class SupabaseFotoStorageService implements FotoStorageService {
@@ -26,11 +26,7 @@ public class SupabaseFotoStorageService implements FotoStorageService {
     private final SupabaseStorageProperties properties;
     private final RestClient restClient;
 
-    /**
-     * Crea el cliente de Supabase Storage.
-     *
-     * @param properties propiedades externas de Storage
-     */
+
     public SupabaseFotoStorageService(SupabaseStorageProperties properties) {
         this.properties = properties;
         this.restClient = RestClient.builder()
@@ -75,7 +71,7 @@ public class SupabaseFotoStorageService implements FotoStorageService {
         }
     }
 
-    /** {@inheritDoc} */
+
     @Override
     public String obtenerUrlFotoPerfil(String ruta) {
         if (ruta == null || ruta.isBlank() || !properties.estaConfiguradoPerfil()) {
@@ -100,7 +96,6 @@ public class SupabaseFotoStorageService implements FotoStorageService {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public String guardarFotoPerfil(
             String ruta,
