@@ -3,9 +3,7 @@ package com.fittrack.ejercicio.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Grupos musculares disponibles para clasificar un ejercicio.
- */
+
 public enum GrupoMuscular {
     PECHO("Pecho"),
     ESPALDA("Espalda"),
@@ -18,25 +16,15 @@ public enum GrupoMuscular {
         this.valor = valor;
     }
 
-    /**
-     * Obtiene el nombre legible enviado a los clientes y guardado en la base de datos.
-     *
-     * @return nombre legible del grupo muscular
-     */
+
     @JsonValue
     public String getValor() {
         return valor;
     }
 
-    /**
-     * Convierte el texto recibido por la API o la base de datos en un grupo muscular.
-     *
-     * @param valor texto que representa el grupo muscular
-     * @return grupo muscular correspondiente
-     * @throws IllegalArgumentException si el valor no corresponde a un grupo permitido
-     */
+
     @JsonCreator
-    public static GrupoMuscular desdeValor(String valor) {
+    public static GrupoMuscular desdeValor(String valor) {//Método estático que permite crear una instancia de GrupoMuscular a partir de un valor de cadena
         if (valor == null) {
             throw new IllegalArgumentException("El grupo muscular es obligatorio.");
         }

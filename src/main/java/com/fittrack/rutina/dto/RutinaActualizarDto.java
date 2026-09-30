@@ -10,16 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-/**
- * Datos necesarios para reemplazar por completo una rutina y sus ejercicios.
- * El propietario se obtiene del JWT, por eso el body no lleva {@code id},
- * {@code usuarioId} ni {@code status}.
- *
- * @param nombre nombre de la rutina
- * @param descripcion descripción opcional de la rutina
- * @param diaSemana día asignado a la rutina
- * @param ejercicios configuraciones que reemplazan a las asociaciones actuales
- */
+
 public record RutinaActualizarDto(
         @NotBlank @Size(max = 100)
         String nombre,

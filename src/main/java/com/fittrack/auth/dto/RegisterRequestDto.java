@@ -3,7 +3,6 @@ package com.fittrack.auth.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDto {
+public class RegisterRequestDto {//DTO para la solicitud de registro, contiene el nombre, correo y la contraseña del usuario
 
 	@NotBlank(message = "El nombre es obligatorio")
 	@Size(max = 255, message = "El nombre no puede superar los 255 caracteres")

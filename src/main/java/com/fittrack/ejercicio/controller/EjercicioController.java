@@ -86,7 +86,8 @@ public class EjercicioController {
             @Valid @RequestBody EjercicioRequest request,
             @AuthenticationPrincipal UsuarioAutenticado usuario) {
         EjercicioResponse creado = ejercicioService.guardar(request, usuario.id());
-        return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);
+        return ResponseEntity.created(URI.create("/ejercicios/" + creado.id())).body(creado);//retorna un objeto EjercicioResponse con los datos del ejercicio creado 
+        // y la ubicación del recurso
     }
 
     @Operation(summary = "Actualizar un ejercicio", description = "Actualiza los datos de un ejercicio existente del usuario autenticado.")

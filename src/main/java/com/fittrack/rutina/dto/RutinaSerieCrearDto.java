@@ -7,14 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-/**
- * Datos de una serie planificada para un ejercicio de la rutina.
- *
- * @param numeroSerie número de la serie dentro del ejercicio
- * @param repeticionesObjetivo repeticiones planificadas
- * @param pesoObjetivo peso planificado
- */
-public record RutinaSerieCrearDto(
+
+public record RutinaSerieCrearDto(// Configuración de una serie planificada para un ejercicio dentro de una rutina
         @NotNull @Positive
         Integer numeroSerie,
 

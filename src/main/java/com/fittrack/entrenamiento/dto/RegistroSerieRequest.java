@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-/** Datos de una serie realizada durante un entrenamiento. */
+//Datos de una serie realizada durante un entrenamiento.
 public record RegistroSerieRequest(
         @NotNull @Positive Long rutinaEjercicioId,
         @NotNull @Positive Integer numeroSerie,

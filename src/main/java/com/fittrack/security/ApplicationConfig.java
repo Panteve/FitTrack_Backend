@@ -22,12 +22,13 @@ public class ApplicationConfig {
     private final UsuarioRepository usuarioRepository;
 
     @Bean 
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception { // Proporciona el 
+    // AuthenticationManager para la autenticación de usuarios.
         return config.getAuthenticationManager();
     }
 
     @Bean 
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider() {// Configura el proveedor de autenticación que utiliza la base de datos para validar usuarios.
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -35,7 +36,7 @@ public class ApplicationConfig {
     }
 
     @Bean 
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {// Proporciona un codificador de contraseñas que utiliza el algoritmo BCrypt con un factor de fuerza de 12.
         return new BCryptPasswordEncoder(12);
     }
 

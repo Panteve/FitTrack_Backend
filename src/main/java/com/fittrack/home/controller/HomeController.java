@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-/** Expone la información principal del usuario autenticado. */
+//Expone la información principal del usuario autenticado.
 @RestController
 @RequestMapping("/home")
 @Tag(name = "Home", description = "Información de la pantalla principal")
@@ -22,23 +22,14 @@ public class HomeController {
 
     private final HomeService homeService;
 
-    /**
-     * Crea el controlador de la pantalla principal.
-     *
-     * @param homeService servicio de la pantalla principal
-     */
+
     public HomeController(HomeService homeService) {
         this.homeService = homeService;
     }
 
-    /**
-     * Obtiene la rutina sugerida y los entrenamientos recientes del usuario.
-     *
-     * @param usuario identidad obtenida del JWT
-     * @return información de la pantalla principal
-     */
+
     @GetMapping
-    @Operation(summary = "Obtener la información del Home")
+    @Operation(summary = "Obtener la información del Home")// Obtiene la información principal del usuario autenticado, incluyendo resumen de entrenamientos y estadísticas
     @ApiResponse(responseCode = "200", description = "Información obtenida")
     public ResponseEntity<HomeDto> obtenerHome(
             @AuthenticationPrincipal UsuarioAutenticado usuario) {

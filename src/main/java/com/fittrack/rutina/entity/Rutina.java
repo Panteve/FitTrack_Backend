@@ -3,6 +3,9 @@ package com.fittrack.rutina.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fittrack.rutina.enums.DiaSemana;
+import com.fittrack.usuario.entity.Usuario;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,16 +19,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-
-import com.fittrack.rutina.enums.DiaSemana;
-import com.fittrack.usuario.entity.Usuario;
-
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Representa una rutina perteneciente a un usuario.
- */
+
 @Entity
 @Table(name = "rutina")
 @Getter
@@ -67,14 +64,6 @@ public class Rutina {
     public Rutina() {
     }
 
-    /**
-     * Crea una rutina activa.
-     *
-     * @param usuario propietario de la rutina
-     * @param nombre nombre de la rutina
-     * @param descripcion descripción opcional
-     * @param diaSemana día asignado
-     */
     public Rutina(Usuario usuario, String nombre, String descripcion, DiaSemana diaSemana) {
         this.usuario = usuario;
         this.nombre = nombre;
@@ -83,22 +72,14 @@ public class Rutina {
         this.status = true; // Toda rutina nace activa; el borrado logico la desactiva.
     }
 
-    /**
-     * Agrega un ejercicio y mantiene ambos lados de la relación.
-     *
-     * @param rutinaEjercicio ejercicio configurado para la rutina
-     */
-    public void agregarRutinaEjercicio(RutinaEjercicio rutinaEjercicio) {
+
+    public void agregarRutinaEjercicio(RutinaEjercicio rutinaEjercicio) {// Agrega un ejercicio a la rutina, estableciendo la relación bidireccional.
         rutinaEjercicio.setRutina(this);
         rutinaEjercicios.add(rutinaEjercicio);
     }
 
-    /**
-     * Reemplaza todos los ejercicios configurados de la rutina.
-     *
-     * @param nuevosEjercicios nueva configuración de ejercicios
-     */
-    public void reemplazarRutinaEjercicios(
+
+    public void reemplazarRutinaEjercicios(// Reemplaza la lista de ejercicios de la rutina, eliminando los existentes y agregando los nuevos.
             List<RutinaEjercicio> nuevosEjercicios) {
         rutinaEjercicios.clear();
         nuevosEjercicios.forEach(this::agregarRutinaEjercicio);

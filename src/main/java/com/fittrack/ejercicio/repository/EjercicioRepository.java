@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.fittrack.ejercicio.entity.Ejercicio;
 
-public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {
+public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {//Repositorio de ejercicios que extiende JpaRepository para proporcionar operaciones 
+// CRUD y consultas personalizadas para la entidad Ejercicio.
 
 
     List<Ejercicio> findAllByUsuario_IdAndStatusTrue(Long usuarioId);

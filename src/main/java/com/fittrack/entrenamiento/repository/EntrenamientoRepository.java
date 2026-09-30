@@ -13,12 +13,6 @@ import com.fittrack.entrenamiento.entity.Entrenamiento;
 
 public interface EntrenamientoRepository extends JpaRepository<Entrenamiento, Long> {
 
-    /**
-     * Lista los entrenamientos activos de un usuario sin cargar las series.
-     *
-     * @param usuarioId identificador del usuario
-     * @return resúmenes ordenados del más reciente al más antiguo
-     */
     @Query("""
             select new com.fittrack.entrenamiento.dto.EntrenamientoDto(
                     e.id,
@@ -37,39 +31,27 @@ public interface EntrenamientoRepository extends JpaRepository<Entrenamiento, Lo
     List<EntrenamientoDto> findResumenByUsuarioId(
             @Param("usuarioId") Long usuarioId);
 
-    /**
-     * Obtiene como máximo los veinte entrenamientos activos más recientes.
-     *
-     * @param usuarioId identificador del usuario
-     * @return entrenamientos ordenados del más reciente al más antiguo
-     */
-    @EntityGraph(attributePaths = "rutina")
+
+    @EntityGraph(attributePaths = "rutina")// Carga la rutina asociada al entrenamiento
     List<Entrenamiento> findTop20ByUsuario_IdAndStatusTrueOrderByFechaDescIdDesc(
             Long usuarioId);
 
-    /**
-     * Obtiene un entrenamiento activo con todas las relaciones necesarias para
-     * construir su detalle.
-     *
-     * @param entrenamientoId identificador del entrenamiento
-     * @param usuarioId identificador del propietario
-     * @return entrenamiento encontrado
-     */
-    @EntityGraph(attributePaths = {
+
+    @EntityGraph(attributePaths = {// Carga la rutina y los registros de series asociados al entrenamiento
             "rutina",
             "registrosSeries",
             "registrosSeries.ejercicio"
     })
-    Optional<Entrenamiento> findDistinctByIdAndUsuario_IdAndStatusTrue(
+    Optional<Entrenamiento> findDistinctByIdAndUsuario_IdAndStatusTrue(// Busca un entrenamiento activo con sus series
             Long entrenamientoId,
             Long usuarioId);
 
-    /** Busca un entrenamiento activo sin cargar sus series. */
+    //Busca un entrenamiento activo sin cargar sus series.
     Optional<Entrenamiento> findByIdAndUsuario_IdAndStatusTrue(
             Long entrenamientoId,
             Long usuarioId);
 
-    /** Busca un entrenamiento del usuario sin filtrar su estado. */
+    // Busca un entrenamiento del usuario sin filtrar su estado.
     Optional<Entrenamiento> findByIdAndUsuario_Id(
             Long entrenamientoId,
             Long usuarioId);

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.hibernate.annotations.BatchSize;
 
+import com.fittrack.ejercicio.entity.Ejercicio;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,15 +19,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-
-import com.fittrack.ejercicio.entity.Ejercicio;
-
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Representa la aparición de un ejercicio dentro de una rutina.
- */
+
 @Entity
 @Table(name = "rutina_ejercicio")
 @Getter
@@ -58,22 +55,12 @@ public class RutinaEjercicio {
     public RutinaEjercicio() {
     }
 
-    /**
-     * Crea una configuración de ejercicio para una rutina.
-     *
-     * @param ejercicio ejercicio asociado
-     * @param orden posición dentro de la rutina
-     */
+
     public RutinaEjercicio(Ejercicio ejercicio, Integer orden) {
         this.ejercicio = ejercicio;
         this.orden = orden;
     }
 
-    /**
-     * Agrega una serie planificada y mantiene ambos lados de la relación.
-     *
-     * @param serie serie planificada para el ejercicio
-     */
     public void agregarSerie(RutinaSerie serie) {
         serie.setRutinaEjercicio(this);
         series.add(serie);

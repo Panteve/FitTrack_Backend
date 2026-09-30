@@ -8,7 +8,8 @@ import java.util.List;
  * @param ejerciciosSistema ejercicios generales sin usuario propietario
  * @param misEjercicios ejercicios creados por el usuario autenticado
  */
-public record EjerciciosDisponiblesResponse(
+public record EjerciciosDisponiblesResponse(//DTO para la respuesta de los ejercicios disponibles, 
+// contiene los ejercicios del sistema y los ejercicios del usuario autenticado
         List<EjercicioResponse> ejerciciosSistema,
         List<EjercicioResponse> misEjercicios) {
 }

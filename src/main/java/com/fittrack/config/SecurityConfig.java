@@ -22,9 +22,10 @@ public class SecurityConfig {
 	private final AuthenticationProvider authProvider;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {//Configura la cadena de filtros de seguridad para la aplicación, 
+	// definiendo las reglas de autorización y autenticación.
 		return http
-				.csrf(csrf -> csrf.disable())
+				.csrf(csrf -> csrf.disable())//Desactiva la protección CSRF, ya que se utilizará JWT para la autenticación.
 				.authorizeHttpRequests(authRequest -> authRequest
 						.requestMatchers(
 								"/auth/login",
@@ -35,7 +36,8 @@ public class SecurityConfig {
 						.permitAll()
 						.anyRequest().authenticated())
 				.sessionManagement(sessionManager -> sessionManager
-						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//Configura la política de creación de sesiones como STATELESS, 
+						// ya que se utilizará JWT para la autenticación.
 				.authenticationProvider(authProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();

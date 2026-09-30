@@ -10,8 +10,9 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-/** Datos requeridos para finalizar y guardar un entrenamiento. */
-public record EntrenamientoCrearDto(
+
+public record EntrenamientoCrearDto(//Datos necesarios para crear un entrenamiento finalizado, 
+// incluyendo la rutina asociada, fecha, duración, notas y series realizadas.
         @NotNull @Positive Long rutinaId,
         @NotNull @PastOrPresent LocalDate fecha,
         @NotNull @Positive Integer duracionMinutos,

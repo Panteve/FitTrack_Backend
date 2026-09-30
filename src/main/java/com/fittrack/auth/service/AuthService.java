@@ -32,21 +32,17 @@ public class AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final FotoStorageService fotoStorageService;
 	
-	/**
-	 * Autentica al usuario y entrega los datos necesarios para iniciar su sesión.
-	 *
-	 * @param request correo y contraseña enviados por el cliente
-	 * @return token, datos básicos y URL temporal de la foto cuando existe
-	 */
-	public AuthResponseDto login(LoginRequestDto request) {
+
+	public AuthResponseDto login(LoginRequestDto request) {//Se autentica al usuario utilizando el correo y la contraseña proporcionados en la solicitud de inicio de sesión.
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						request.getCorreo(), request.getContrasena()));
 		Usuario usuario = usuarioRepository.findByCorreoAndStatus(request.getCorreo(), true).orElseThrow(); //Se obtiene el usuario autenticado de la base de datos, 
 		// asegurando que su estado sea activo.
-		String fotoPerfilUrl = fotoStorageService.obtenerUrlFotoPerfil(
+		String fotoPerfilUrl = fotoStorageService.obtenerUrlFotoPerfil( // Se obtiene la URL de la foto de perfil del usuario autenticado utilizando el servicio de almacenamiento de fotos.
 				usuario.getFotoPerfilRuta());
-		return AuthResponseDto.builder()
+		return AuthResponseDto.builder()//Se construye y retorna un objeto AuthResponseDto que contiene el token JWT generado para el 
+		// usuario, su ID, nombre y la URL de su foto de perfil.
 				.token(jwtService.getToken(usuario))
 				.usuarioId(usuario.getId())
 				.nombre(usuario.getNombre())
@@ -54,14 +50,10 @@ public class AuthService {
 				.build();
 	}
 
-	/**
-	 * Registra una cuenta y entrega una sesión autenticada sin foto inicial.
-	 *
-	 * @param request datos validados de la cuenta nueva
-	 * @return token y datos básicos del usuario registrado
-	 */
+
 	@Transactional
-	public AuthResponseDto register(RegisterRequestDto request) {
+	public AuthResponseDto register(RegisterRequestDto request) { //Se registra un nuevo usuario en la base de datos utilizando 
+	// los datos proporcionados en la solicitud de registro.
 		if (usuarioRepository.existsByCorreo(request.getCorreo())) {
 			throw new ApiException(HttpStatus.CONFLICT, "El correo ya está registrado");
 		}
@@ -78,7 +70,8 @@ public class AuthService {
 			throw new ApiException(HttpStatus.CONFLICT, "El correo ya está registrado");
 		}
 
-		return AuthResponseDto.builder()
+		return AuthResponseDto.builder()//Se construye y retorna un objeto AuthResponseDto que contiene el token JWT 
+		// generado para el nuevo usuario, su ID, nombre y la URL de su foto de perfil (inicialmente nula).
 				.token(jwtService.getToken(usuario))
 				.usuarioId(usuario.getId())
 				.nombre(usuario.getNombre())

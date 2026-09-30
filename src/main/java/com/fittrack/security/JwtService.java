@@ -27,13 +27,8 @@ public class JwtService {
         this.secretKey = secretKey;
     }
 
-    /**
-     * Genera un JWT con el identificador y el correo del usuario.
-     *
-     * @param usuario usuario para el que se genera el token
-     * @return JWT firmado
-     */
-    public String getToken(Usuario usuario) {
+
+    public String getToken(Usuario usuario) {// Genera un JWT con el identificador y el correo del usuario.
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("usuarioId", usuario.getId());
         return getToken(extraClaims, usuario);
@@ -50,15 +45,15 @@ public class JwtService {
                 .compact();
     }
 
-    private Key getKey() {
+    private Key getKey() {// Obtiene la clave secreta para firmar y verificar el JWT.
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String getCorreoFromToken(String token) {
+    public String getCorreoFromToken(String token) {// Extrae el correo del usuario desde el JWT.
         return getClaimFromToken(token, claims -> claims.get("correo", String.class));
     }
 
-    public Long getUsuarioIdFromToken(String token) {
+    public Long getUsuarioIdFromToken(String token) {// Extrae el identificador del usuario desde el JWT.
         Number usuarioId = getClaimFromToken(
                 token,
                 claims -> claims.get("usuarioId", Number.class));

@@ -18,7 +18,7 @@ import com.fittrack.rutina.entity.Rutina;
 import com.fittrack.rutina.enums.DiaSemana;
 import com.fittrack.rutina.repository.RutinaRepository;
 
-/** Construye la información mostrada en la pantalla principal. */
+//Construye la información mostrada en la pantalla principal.
 @Service
 public class HomeService {
 
@@ -27,27 +27,16 @@ public class HomeService {
     private final RutinaRepository rutinaRepository;
     private final EntrenamientoRepository entrenamientoRepository;
 
-    /**
-     * Crea el servicio con los repositorios requeridos.
-     *
-     * @param rutinaRepository repositorio de rutinas
-     * @param entrenamientoRepository repositorio de entrenamientos
-     */
-    public HomeService(
+
+    public HomeService(// Servicio que construye la información mostrada en la pantalla principal
             RutinaRepository rutinaRepository,
             EntrenamientoRepository entrenamientoRepository) {
         this.rutinaRepository = rutinaRepository;
         this.entrenamientoRepository = entrenamientoRepository;
     }
 
-    /**
-     * Obtiene la rutina recomendada y los últimos veinte entrenamientos.
-     *
-     * @param usuarioId identificador del usuario autenticado
-     * @return información de la pantalla principal
-     */
     @Transactional(readOnly = true)
-    public HomeDto obtenerHome(Long usuarioId) {
+    public HomeDto obtenerHome(Long usuarioId) {// Obtiene la información principal del usuario autenticado, incluyendo la próxima rutina y los últimos entrenamientos
         ProximaRutinaDto proximaRutina = buscarRutinaRecomendada(usuarioId)
                 .map(this::toProximaRutinaDto)
                 .orElse(null);
@@ -61,7 +50,7 @@ public class HomeService {
         return new HomeDto(proximaRutina, ultimosEntrenamientos);
     }
 
-    private Optional<Rutina> buscarRutinaRecomendada(Long usuarioId) {
+    private Optional<Rutina> buscarRutinaRecomendada(Long usuarioId) {// Busca la próxima rutina sugerida para el usuario, priorizando la rutina del día actual si existe
         DiaSemana diaActual = obtenerDiaActual();
         Optional<Rutina> rutinaDelDia = rutinaRepository
                 .findFirstByUsuario_IdAndStatusTrueAndDiaSemanaOrderByIdAsc(
@@ -76,7 +65,7 @@ public class HomeService {
                 .findFirstByUsuario_IdAndStatusTrueOrderByIdAsc(usuarioId);
     }
 
-    private DiaSemana obtenerDiaActual() {
+    private DiaSemana obtenerDiaActual() {// Obtiene el día de la semana actual en la zona horaria especificada
         DayOfWeek diaActual = LocalDate.now(ZONA_HORARIA).getDayOfWeek();
 
         return switch (diaActual) {
@@ -90,14 +79,16 @@ public class HomeService {
         };
     }
 
-    private ProximaRutinaDto toProximaRutinaDto(Rutina rutina) {
+    private ProximaRutinaDto toProximaRutinaDto(Rutina rutina) {// Convierte una entidad de rutina en un DTO de próxima rutina, 
+    // incluyendo su ID, nombre y número de ejercicios
         return new ProximaRutinaDto(
                 rutina.getId(),
                 rutina.getRutinaEjercicios().size(),
                 rutina.getNombre());
     }
 
-    private UltimoEntrenamientoDto toUltimoEntrenamientoDto(
+    private UltimoEntrenamientoDto toUltimoEntrenamientoDto(// Convierte una entidad de entrenamiento en un DTO de último entrenamiento, 
+    // incluyendo su ID, nombre, fecha y duración en minutos
             Entrenamiento entrenamiento) {
         return new UltimoEntrenamientoDto(
                 entrenamiento.getId(),

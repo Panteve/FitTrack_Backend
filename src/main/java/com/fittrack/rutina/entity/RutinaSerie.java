@@ -11,18 +11,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Representa una serie planificada para un ejercicio dentro de una rutina.
- */
+
 @Entity
 @Table(name = "rutina_serie")
 @Getter
 @Setter
-public class RutinaSerie {
+public class RutinaSerie {// Representa una serie planificada para un ejercicio dentro de una rutina.
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,14 +42,8 @@ public class RutinaSerie {
     public RutinaSerie() {
     }
 
-    /**
-     * Crea una serie planificada.
-     *
-     * @param numeroSerie número de la serie dentro del ejercicio
-     * @param repeticionesObjetivo repeticiones planificadas
-     * @param pesoObjetivo peso planificado
-     */
-    public RutinaSerie(
+
+    public RutinaSerie(// Crea una serie planificada para un ejercicio dentro de una rutina.
             Integer numeroSerie,
             Integer repeticionesObjetivo,
             BigDecimal pesoObjetivo) {

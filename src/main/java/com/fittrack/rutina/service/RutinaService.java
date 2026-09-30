@@ -74,16 +74,9 @@ public class RutinaService {
                         "Rutina no encontrada."));
     }
 
-    /**
-     * Crea una rutina con sus configuraciones de ejercicios asociadas.
-     *
-     * @param request   datos de la rutina y sus ejercicios
-     * @param usuarioId identificador del usuario autenticado
-     * @return rutina creada con el detalle de sus ejercicios
-     * @throws ApiException si el nombre ya está ocupado o alguno de los ejercicios no existe
-     */
+ 
     @Transactional
-    public RutinaDetalleDto crearRutina(
+    public RutinaDetalleDto crearRutina(// Crea una nueva rutina para un usuario autenticado.
             RutinaCrearDto request,
             Long usuarioId) {
         String nombreNormalizado = request.nombre().trim();
@@ -109,18 +102,7 @@ public class RutinaService {
         return toDetalleDto(rutinaGuardada);
     }
 
-    /**
-     * Reemplaza por completo los datos editables de una rutina y su configuracion
-     * de ejercicios. Las asociaciones anteriores se eliminan y se vuelven a crear
-     * desde la lista original, por lo que sus identificadores internos pueden cambiar.
-     *
-     * @param rutinaId identificador de la rutina a actualizar
-     * @param request datos nuevos de la rutina y sus ejercicios
-     * @param usuarioId identificador del usuario autenticado
-     * @return rutina actualizada con el detalle de sus ejercicios
-     * @throws ApiException si el nombre ya está ocupado, la rutina no existe,
-     *         está inactiva, pertenece a otro usuario o alguno de los ejercicios no existe
-     */
+
     @Transactional
     public RutinaDetalleDto actualizarRutina(
             Long rutinaId,
@@ -189,17 +171,7 @@ public class RutinaService {
         }
     }
 
-    /**
-     * Desactiva logicamente una rutina del usuario autenticado. No se borra la fila
-     * de {@code rutina} ni sus filas de {@code rutina_ejercicio}: solo se marca
-     * {@code status} en {@code false} y el cambio se persiste por dirty checking.
-     * Si la rutina ya estaba inactiva no se modifica nada, de modo que la operacion
-     * es idempotente y un segundo DELETE tambien responde sin error.
-     *
-     * @param rutinaId identificador de la rutina a desactivar
-     * @param usuarioId identificador del usuario autenticado
-     * @throws ApiException si la rutina no existe o pertenece a otro usuario
-     */
+
     @Transactional
     public void eliminarRutina(Long rutinaId, Long usuarioId) {
         Rutina rutina = rutinaRepository

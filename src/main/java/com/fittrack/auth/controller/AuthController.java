@@ -37,8 +37,8 @@ public class AuthController {
 		@ApiResponse ( responseCode = "500", description = "Error interno del servidor")
 	 })
 	@PostMapping(value = "/login")
-	public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-		return ResponseEntity.ok(authService.login(request));
+	public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {//endpoint para iniciar sesión
+		return ResponseEntity.ok(authService.login(request));//retorna un objeto AuthResponseDto con el token JWT y la información del usuario
 	}
 
 	@Operation( summary = "Registrar un nuevo usuario", description = "Crea una nueva cuenta de usuario y retorna los datos de autenticación.") 
@@ -47,10 +47,10 @@ public class AuthController {
 		@ApiResponse( responseCode = "400", description = "Datos de registro inválidos"), 
 		@ApiResponse( responseCode = "409", description = "El correo electrónico ya está registrado") })
 	@PostMapping(value = "/register")
-	public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
+	public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {//endpoint para registrar un nuevo usuario
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(authService.register(request));
+				.body(authService.register(request));//retorna un objeto AuthResponseDto con el token JWT y la información del usuario
 	}
 
 }
