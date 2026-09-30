@@ -29,13 +29,8 @@ public class EjercicioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Lista los ejercicios pertenecientes al usuario autenticado.
-     *
-     * @param usuarioId identificador del usuario autenticado
-     * @return ejercicios pertenecientes al usuario
-     */
-    @Transactional(readOnly = true)
+
+    @Transactional(readOnly = true)// Lista todos los ejercicios activos del usuario autenticado.
     public List<EjercicioResponse> listarTodos(Long usuarioId) {
         return ejercicioRepository.findAllByUsuario_IdAndStatusTrue(usuarioId)
                 .stream()
@@ -43,13 +38,8 @@ public class EjercicioService {
                 .toList();
     }
 
-    /**
-     * Lista por separado los ejercicios del sistema y los del usuario.
-     *
-     * @param usuarioId identificador del usuario autenticado
-     * @return ejercicios que puede seleccionar el usuario
-     */
-    @Transactional(readOnly = true)
+
+    @Transactional(readOnly = true)// Lista todos los ejercicios activos del sistema y del usuario autenticado.
     public EjerciciosDisponiblesResponse listarDisponibles(Long usuarioId) {
         List<EjercicioResponse> ejerciciosSistema = ejercicioRepository
                 .findAllByUsuarioIsNullAndStatusTrueOrderByNombreAsc()
@@ -67,28 +57,15 @@ public class EjercicioService {
                 misEjercicios);
     }
 
-    /**
-     * Obtiene un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param ejercicioId identificador del ejercicio
-     * @param usuarioId identificador del usuario autenticado
-     * @return ejercicio encontrado
-     * @throws ApiException si el ejercicio no existe o pertenece a otro usuario
-     */
-    @Transactional(readOnly = true)
-    public EjercicioResponse obtenerPorId(Long ejercicioId, Long usuarioId) {
+
+    @Transactional(readOnly = true)//
+    public EjercicioResponse obtenerPorId(Long ejercicioId, Long usuarioId) {// Obtiene un ejercicio activo del usuario autenticado por su identificador.
         return toResponse(buscarEjercicioPropio(ejercicioId, usuarioId));
     }
 
-    /**
-     * Crea un ejercicio para el usuario autenticado.
-     *
-     * @param request datos del ejercicio
-     * @param usuarioId identificador del usuario autenticado
-     * @return ejercicio creado
-     */
+
     @Transactional
-    public EjercicioResponse guardar(EjercicioRequest request, Long usuarioId) {
+    public EjercicioResponse guardar(EjercicioRequest request, Long usuarioId) {// Guarda un nuevo ejercicio para el usuario autenticado.
         Usuario usuario = usuarioRepository.getReferenceById(usuarioId);
         Ejercicio ejercicio = new Ejercicio(
                 usuario,
@@ -100,17 +77,8 @@ public class EjercicioService {
         return toResponse(ejercicioRepository.save(ejercicio));
     }
 
-    /**
-     * Actualiza un ejercicio perteneciente al usuario autenticado.
-     *
-     * @param ejercicioId identificador del ejercicio
-     * @param request nuevos datos del ejercicio
-     * @param usuarioId identificador del usuario autenticado
-     * @return ejercicio actualizado
-     * @throws ApiException si el ejercicio no existe o pertenece a otro usuario
-     */
     @Transactional
-    public EjercicioResponse actualizar(
+    public EjercicioResponse actualizar(// Actualiza un ejercicio propio del usuario autenticado.
             Long ejercicioId,
             EjercicioRequest request,
             Long usuarioId) {
@@ -136,7 +104,7 @@ public class EjercicioService {
         return toResponse(ejercicio);
     }
 
-    private Ejercicio buscarEjercicioPropio(Long ejercicioId, Long usuarioId) {
+    private Ejercicio buscarEjercicioPropio(Long ejercicioId, Long usuarioId) {// Busca un ejercicio activo del usuario autenticado por su identificador.
         return ejercicioRepository
                 .findByIdAndUsuario_Id(ejercicioId, usuarioId)
                 .orElseThrow(() -> new ApiException(

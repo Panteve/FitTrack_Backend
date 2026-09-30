@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-/** Expone las operaciones del usuario autenticado sobre sus entrenamientos. */
+//Expone las operaciones del usuario autenticado sobre sus entrenamientos.
 @RestController
 @RequestMapping("/entrenamientos")
 @Tag(name = "Entrenamientos", description = "CRUD de entrenamientos y fotografías")
@@ -45,7 +45,7 @@ public class EntrenamientoController {
         this.entrenamientoService = entrenamientoService;
     }
 
-    /** Lista los entrenamientos activos del usuario autenticado. */
+    //Lista los entrenamientos activos del usuario autenticado.
     @GetMapping
     @Operation(summary = "Listar mis entrenamientos")
     @ApiResponse(responseCode = "200", description = "Listado obtenido")
@@ -55,7 +55,7 @@ public class EntrenamientoController {
                 entrenamientoService.obtenerEntrenamientos(usuario.id()));
     }
 
-    /** Obtiene un entrenamiento activo con sus series realizadas. */
+    //Obtiene un entrenamiento activo con sus series realizadas.
     @GetMapping("/{id}")
     @Operation(summary = "Obtener un entrenamiento por ID")
     @ApiResponses({
@@ -69,7 +69,7 @@ public class EntrenamientoController {
                 entrenamientoService.obtenerPorId(id, usuario.id()));
     }
 
-    /** Guarda un entrenamiento finalizado. */
+    //Guarda un entrenamiento finalizado.
     @PostMapping
     @Operation(summary = "Finalizar y guardar un entrenamiento")
     @ApiResponses({
@@ -84,7 +84,7 @@ public class EntrenamientoController {
                 .body(entrenamientoService.crear(request, usuario.id()));
     }
 
-    /** Actualiza únicamente las notas de un entrenamiento. */
+    //Actualiza únicamente las notas de un entrenamiento.
     @PatchMapping("/{id}")
     @Operation(summary = "Actualizar las notas de un entrenamiento")
     @ApiResponses({
@@ -103,7 +103,7 @@ public class EntrenamientoController {
                         usuario.id()));
     }
 
-    /** Desactiva lógicamente un entrenamiento. */
+    //Desactiva lógicamente un entrenamiento.
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar lógicamente un entrenamiento")
     @ApiResponses({
@@ -117,7 +117,7 @@ public class EntrenamientoController {
         return ResponseEntity.noContent().build();
     }
 
-    /** Sube o reemplaza la fotografía opcional de un entrenamiento. */
+    //Sube o reemplaza la fotografía opcional de un entrenamiento.
     @PostMapping(
             value = "/{id}/foto",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
